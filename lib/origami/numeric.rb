@@ -133,7 +133,6 @@ module Origami
     end
     
     alias value to_i
-    
   end
   
   class InvalidRealObjectError < InvalidObjectError #:nodoc:
@@ -182,7 +181,10 @@ module Origami
     end
     
     alias value to_f
-    
+
+    def to_s
+      sprintf("%f", self).sub(/\.0*$|(\.\d*[^0])0*$/, '\1')
+    end
   end
 
 end
