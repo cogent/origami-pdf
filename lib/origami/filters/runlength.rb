@@ -112,6 +112,7 @@ module Origami
       end
 
     end
+    RL = RunLength
   end
 end
 

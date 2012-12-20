@@ -63,6 +63,7 @@ module Origami
       end
       
     end
+    AHx = ASCIIHex
     
     class InvalidASCII85StringError < InvalidFilterDataError #:nodoc:
     end
@@ -189,6 +190,7 @@ module Origami
       end
 
     end
+    A85 = ASCII85
   end
 end
 

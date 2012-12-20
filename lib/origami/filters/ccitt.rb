@@ -516,6 +516,7 @@ module Origami
         bitw.write((bit_value << length) - bit_value, length)
       end
     end
+    CCF = CCITTFax
 
   end
 

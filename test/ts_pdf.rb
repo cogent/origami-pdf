@@ -1,4 +1,9 @@
-require 'test/unit/testsuite'
+begin
+  require 'test/unit/testsuite'
+rescue LoadError
+  abort "Error: you need to install test-unit"
+end
+
 require 'tc_pdfparse.rb'
 require 'tc_streams.rb'
 require 'tc_pdfencrypt.rb'

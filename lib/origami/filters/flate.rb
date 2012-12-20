@@ -98,6 +98,7 @@ module Origami
       end
 
     end
+    Fl = Flate
   end
 end
 

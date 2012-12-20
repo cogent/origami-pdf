@@ -54,7 +54,15 @@ module Origami
       :CCITTFaxDecode,
       :JBIG2Decode,
       :DCTDecode,
-      :JPXDecode
+      :JPXDecode,
+      # abbrev
+      :AHx, # ASCIIHexDecode
+      :A85, # ASCII85Decode
+      :LZW, # LZWDecode
+      :Fl,  # FlateDecode
+      :RL,  # RunLengthDecode
+      :CCF, # CCITTFaxDecode
+      :DCT, # DCTDecode
     ]
     
     attr_accessor :dictionary
@@ -366,7 +374,6 @@ module Origami
       end
 
       Origami::Filter.const_get(filter.value.to_s.sub(/Decode$/,"")).decode(data, params)
-      
     end
     
     def encode_data(data, filter, params) #:nodoc:
