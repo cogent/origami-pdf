@@ -28,9 +28,9 @@ module Origami
     if RUBY_PLATFORM =~ /win32/ or RUBY_PLATFORM =~ /mingw32/
       require "Win32API"
     
-      getStdHandle = Win32API.new("kernel32", "GetStdHandle", ['L'], 'L')
-      @@setConsoleTextAttribute = Win32API.new("kernel32", "SetConsoleTextAttribute", ['L', 'N'], 'I')
-
+      getStdHandle = Win32API.new("kernel32", "GetStdHandle", 'L', 'L')
+      @@getConsoleScreenBufferInfo = Win32API.new("kernel32", "GetConsoleScreenBufferInfo", 'LP', 'L')
+      @@setConsoleTextAttribute = Win32API.new("kernel32", "SetConsoleTextAttribute", 'LN', 'I')
       @@hOut = getStdHandle.call(-11)
     end
 
@@ -68,10 +68,17 @@ module Origami
 
     def self.set_fg_color(color, bright = false, fd = STDOUT) #:nodoc:
       if RUBY_PLATFORM =~ /win32/ or RUBY_PLATFORM =~ /mingw32/
-        if bright then color |= Colors::WHITE end
+        screen_info = "\x00" * 30
+        current = 
+          if @@getConsoleScreenBufferInfo.call(@@hOut, screen_info) == 1
+            screen_info[8,2].unpack('v')[0]
+          else 
+            Colors::GREY
+          end
+        color |= Colors::WHITE if bright
         @@setConsoleTextAttribute.call(@@hOut, color)
         yield
-        @@setConsoleTextAttribute.call(@@hOut, Colors::GREY)
+        @@setConsoleTextAttribute.call(@@hOut, current)
       else
         col, nocol = [color, Colors::GREY].map! { |key| "\033[#{key}m" }
         fd << col
