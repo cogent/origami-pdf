@@ -54,7 +54,7 @@ module Origami
     end
 
     def to_s
-      "#{operands.map!{|op| op.to_o.to_s}.join(' ')}#{' ' unless operands.empty?}#{operator}\n"
+      "#{operands.map{|op| op.to_o.to_s}.join(' ')}#{' ' unless operands.empty?}#{operator}\n"
     end
 
     class << self
