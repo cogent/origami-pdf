@@ -79,7 +79,7 @@ module Origami
       def parse(stream)
         operands = []
         while type = Object.typeof(stream, true)
-          operands.unshift type.parse(stream)
+          operands.push type.parse(stream)
         end
         
         if not stream.eos?
