@@ -25,7 +25,15 @@ module Origami
 
     def append_page(page = Page.new, *more)
       raise InvalidPDFError, "Invalid page tree" if not self.Catalog or not self.Catalog.Pages or not self.Catalog.Pages.is_a?(PageTreeNode)
-      pages = [ page ].concat(more)
+      
+      pages = [ page ].concat(more).map! do |pg|
+        if pg.pdf and pg.pdf != self
+          # Page from another document must be exported.
+          pg.export
+        else
+          pg
+        end
+      end
       
       treeroot = self.Catalog.Pages
       
@@ -42,6 +50,9 @@ module Origami
 
     def insert_page(index, page)
       raise InvalidPDFError, "Invalid page tree" if not self.Catalog or not self.Catalog.Pages or not self.Catalog.Pages.is_a?(PageTreeNode)
+
+      # Page from another document must be exported.
+      page = page.export if page.pdf and page.pdf != self
 
       self.Catalog.Pages.insert_page(index, page)
       self

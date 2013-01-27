@@ -276,12 +276,16 @@ module Origami
     # Sets whether the object is indirect or not.
     # Indirect objects are allocated numbers at build time.
     #
-    def set_indirect(dir)
-      unless dir == true or dir == false
+    def set_indirect(bool)
+      unless bool == true or bool == false
         raise TypeError, "The argument must be boolean"
       end
-      
-      @indirect = dir
+
+      if not bool
+        @no = @generation = 0
+        @pdf = nil
+      end
+      @indirect = bool
       self
     end
     
@@ -319,7 +323,20 @@ module Origami
     # Deep copy of an object.
     #
     def copy
-      Marshal.load(Marshal.dump(self))
+      saved_pdf = @pdf
+      saved_parent = @parent
+      @pdf = @parent = nil # do not process parent object and document in the copy
+
+      # Perform the recursive copy (quite dirty).
+      copyobj = Marshal.load(Marshal.dump(self))
+
+      # restore saved values
+      @pdf = saved_pdf
+      @parent = saved_parent
+      copyobj.set_pdf(saved_pdf)
+      copyobj.parent = parent
+
+      copyobj
     end
     
     #
@@ -368,6 +385,76 @@ module Origami
       end
 
       xref_cache[self.reference]
+    end
+
+    #
+    # Creates an exportable version of current object.
+    # The exportable version is a copy of _self_ with solved references, no owning PDF and no parent.
+    # References to Catalog or PageTreeNode objects have been destroyed.
+    #
+    # When exported, an object can be moved into another document without hassle.
+    #
+    def export
+      exported_obj = self.logicalize
+      exported_obj.no = exported_obj.generation = 0
+      exported_obj.set_pdf(nil) if exported_obj.is_indirect?
+      exported_obj.parent = nil
+      
+      exported_obj
+    end
+
+    #
+    # Returns a logicalized copy of _self_.
+    # See logicalize! 
+    #
+    def logicalize #:nodoc:
+      self.copy.logicalize!
+    end
+
+    #
+    # Transforms recursively every references to the copy of their respective object.
+    # Catalog and PageTreeNode objects are excluded to limit the recursion.
+    #
+    def logicalize! #:nodoc:
+
+      def resolve_all_references(obj, browsed = [], ref_cache = {})
+        return if browsed.include?(obj)
+        browsed.push(obj)
+
+        if obj.is_a?(ObjectStream)
+          obj.each do |subobj|
+            resolve_all_references(obj, browsed, ref_cache)
+          end
+        end
+
+        if obj.is_a?(Dictionary) or obj.is_a?(Array)
+          obj.map! do |subobj|
+            if subobj.is_a?(Reference)
+              new_obj = 
+                if ref_cache.has_key?(subobj)
+                  ref_cache[subobj]
+                else
+                  ref_cache[subobj] = subobj.solve.copy  
+                end
+              new_obj.no = new_obj.generation = 0
+              new_obj.parent = obj
+
+              new_obj unless new_obj.is_a?(Catalog) or new_obj.is_a?(PageTreeNode)
+            else
+              subobj
+            end
+          end
+
+          obj.each do |subobj|
+            resolve_all_references(subobj, browsed, ref_cache)
+          end
+
+        elsif obj.is_a?(Stream)
+          resolve_all_references(obj.dictionary, browsed, ref_cache)
+        end
+      end
+       
+      resolve_all_references(self)
     end
 
     #
@@ -530,5 +617,4 @@ module Origami
     alias output to_s
     
   end
-
 end

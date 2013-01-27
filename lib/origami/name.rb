@@ -92,7 +92,7 @@ module Origami
     end
 
     def ==(object) #:nodoc:
-      @value.to_sym == object
+      self.eql?(object) or @value.to_sym == object
     end
     
     def eql?(object) #:nodoc:

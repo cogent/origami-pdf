@@ -511,10 +511,29 @@ module Origami
     # _object_:: The object to add.
     #
     def <<(object)
-      add_to_revision(object, @revisions.last)
+      owner = object.pdf
+
+      #
+      # Does object belongs to another PDF ?
+      #
+      if owner and not owner.equal?(self)
+        import object
+      else
+        add_to_revision(object, @revisions.last)
+      end
     end
     alias :insert :<<
     
+    #
+    # Similar to PDF#insert or PDF#<<, but for an object belonging to another document.
+    # Object will be recursively copied and new version numbers will be assigned.
+    # Returns the new reference to the imported object.
+    # _object_:: The object to import.
+    #
+    def import(object)
+      self.insert(object.export)
+    end
+
     #
     # Adds a new object to a specific revision.
     # If this object has no version number, then a new one will be automatically computed and assignated to him.
