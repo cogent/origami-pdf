@@ -4,6 +4,10 @@
 	signature.rb
 
 = Info
+	This file is part of Origami, PDF manipulation framework for Ruby
+	Copyright (C) 2010	Guillaume Delugré <guillaume AT security-labs DOT org>
+	All right reserved.
+	
 	Origami is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as published by
   the Free Software Foundation, either version 3 of the License, or

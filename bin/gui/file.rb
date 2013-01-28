@@ -5,7 +5,7 @@
 
 = Info
 	This file is part of PDF Walker, a graphical PDF file browser
-	Copyright (C) 2010	Guillaume Delugré <guillaume@security-labs.org>
+	Copyright (C) 2010	Guillaume Delugré <guillaume AT security-labs DOT org>
 	All right reserved.
 	
   PDF Walker is free software: you can redistribute it and/or modify

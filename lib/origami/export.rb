@@ -5,7 +5,7 @@
 
 = Info
 	This file is part of Origami, PDF manipulation framework for Ruby
-	Copyright (C) 2010	Guillaume DelugrÈ <guillaume@security-labs.org>
+	Copyright (C) 2010	Guillaume DelugrÈ <guillaume AT security-labs DOT org>
 	All right reserved.
 	
   Origami is free software: you can redistribute it and/or modify

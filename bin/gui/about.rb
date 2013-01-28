@@ -5,7 +5,7 @@
 
 = Info
 	This file is part of PDF Walker, a graphical PDF file browser
-	Copyright (C) 2010	Guillaume Delugré <guillaume@security-labs.org>
+	Copyright (C) 2010	Guillaume DelugrÃ© <guillaume AT security-labs DOT org>
 	All right reserved.
 	
   PDF Walker is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ module PDFWalker
           :name => "PDF Walker",
           :program_name => "PDF Walker",
           :version => Origami::VERSION,
-          :copyright => "Copyright (C) 2010\nGuillaume Delugre <guillaume@security-labs.org>\nAll right reserved.",
+          :copyright => "Copyright (C) 2010\nGuillaume Delugre <guillaume AT security-labs DOT org>\nAll right reserved.",
           :comments => "A graphical PDF parser front-end",
           :license => File.read("#{File.dirname(__FILE__)}/COPYING")
         })

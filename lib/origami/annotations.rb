@@ -5,7 +5,7 @@
 
 = Info
 	This file is part of Origami, PDF manipulation framework for Ruby
-	Copyright (C) 2010	Guillaume Delugr» <guillaume@security-labs.org>
+	Copyright (C) 2010	Guillaume Delugr√à <guillaume AT security-labs DOT org>
 	All right reserved.
 	
   Origami is free software: you can redistribute it and/or modify
@@ -347,7 +347,7 @@ module Origami
     class Link < Annotation
       
       #
-      # The annotationís highlighting mode, the visual effect to be used when the mouse button is pressed or held down inside its active area.
+      # The annotation¬ís highlighting mode, the visual effect to be used when the mouse button is pressed or held down inside its active area.
       #
       module Highlight
         # No highlighting
@@ -356,7 +356,7 @@ module Origami
         # Invert the contents of the annotation rectangle. 
         INVERT = :I
         
-        # Invert the annotationís border. 
+        # Invert the annotation¬ís border. 
         OUTLINE = :O
         
         # Display the annotation as if it were being pushed below the surface of the page
@@ -602,7 +602,7 @@ module Origami
         # Invert the contents of the annotation rectangle. 
         INVERT  = :I
         
-        # Invert the annotationís border. 
+        # Invert the annotation¬ís border. 
         OUTLINE = :O
         
         # Display the annotation as if it were being pushed below the surface of the page
