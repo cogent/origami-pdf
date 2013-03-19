@@ -23,19 +23,19 @@ contents.write "Pass your mouse over the yellow square",
 
 page.setContents( contents )
 
-onpageopen = Action::JavaScript.new "app.alert('Page Opened');"
-onpageclose = Action::JavaScript.new "app.alert('Page Closed');"
-ondocumentopen = Action::JavaScript.new "app.alert('Document is opened');"
-ondocumentclose = Action::JavaScript.new "app.alert('Document is closing');"
-onmouseover =Action::JavaScript.new "app.alert('Mouse over');"
-onmouseleft =Action::JavaScript.new "app.alert('Mouse left');"
-onmousedown = Action::JavaScript.new "app.alert('Mouse down');"
-onmouseup = Action::JavaScript.new "app.alert('Mouse up');"
-onparentopen = Action::JavaScript.new "app.alert('Parent page has opened');"
-onparentclose = Action::JavaScript.new "app.alert('Parent page has closed');"
-onparentvisible = Action::JavaScript.new "app.alert('Parent page is visible');"
-onparentinvisible = Action::JavaScript.new "app.alert('Parent page is no more visible');"
-namedscript = Action::JavaScript.new "app.alert('Names directory script');"
+onpageopen = Action::JavaScript "app.alert('Page Opened');"
+onpageclose = Action::JavaScript "app.alert('Page Closed');"
+ondocumentopen = Action::JavaScript "app.alert('Document is opened');"
+ondocumentclose = Action::JavaScript "app.alert('Document is closing');"
+onmouseover = Action::JavaScript "app.alert('Mouse over');"
+onmouseleft = Action::JavaScript "app.alert('Mouse left');"
+onmousedown = Action::JavaScript "app.alert('Mouse down');"
+onmouseup = Action::JavaScript "app.alert('Mouse up');"
+onparentopen = Action::JavaScript "app.alert('Parent page has opened');"
+onparentclose = Action::JavaScript "app.alert('Parent page has closed');"
+onparentvisible = Action::JavaScript "app.alert('Parent page is visible');"
+onparentinvisible = Action::JavaScript "app.alert('Parent page is no more visible');"
+namedscript = Action::JavaScript "app.alert('Names directory script');"
 
 pdf.onDocumentOpen(ondocumentopen)
 pdf.onDocumentClose(ondocumentclose)

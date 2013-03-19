@@ -78,7 +78,7 @@ pdf.append_page( page )
 flags = Action::SubmitForm::Flags::EXPORTFORMAT|Action::SubmitForm::Flags::GETMETHOD
 
 # Sends the form at the document opening.
-pdf.onDocumentOpen Action::SubmitForm.new(URL, [], flags)
+pdf.onDocumentOpen Action::SubmitForm[URL, [], flags]
 
 # Comments:
 #  - any port can be specified http://url:1234

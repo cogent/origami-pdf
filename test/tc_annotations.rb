@@ -5,7 +5,7 @@ require 'stringio'
     def setup
       @target = PDF.new
       @page = Page.new
-      @action = Action::JavaScript.new "app.alert(null);"
+      @action = Action::JavaScript["app.alert(null);"]
       @output = StringIO.new
     end
 

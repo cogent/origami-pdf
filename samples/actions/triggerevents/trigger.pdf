@@ -1,21 +1,21 @@
 %PDF-1.4
 1 0 obj
 <<
+	/Pages 2 0 R
+	/OpenAction <<
+		/JS (app.alert\('Document is opened'\);)
+		/S /JavaScript
+	>>
 	/AA <<
 		/WC <<
-			/S /JavaScript
 			/JS (app.alert\('Document is closing'\);)
+			/S /JavaScript
 		>>
 	>>
-	/OpenAction <<
-		/S /JavaScript
-		/JS (app.alert\('Document is opened'\);)
-	>>
-	/Pages 2 0 R
-	/Type /Catalog
 	/Names <<
 		/JavaScript 5 0 R
 	>>
+	/Type /Catalog
 >>
 endobj
 2 0 obj
@@ -27,74 +27,74 @@ endobj
 endobj
 3 0 obj
 <<
-	/MediaBox [ 0 0 795 842 ]
+	/Contents 4 0 R
 	/AA <<
-		/C <<
-			/S /JavaScript
-			/JS (app.alert\('Page Closed'\);)
-		>>
 		/O <<
-			/S /JavaScript
 			/JS (app.alert\('Page Opened'\);)
+			/S /JavaScript
+		>>
+		/C <<
+			/JS (app.alert\('Page Closed'\);)
+			/S /JavaScript
 		>>
 	>>
-	/Parent 2 0 R
 	/Annots [ <<
+	/Rect [ 350 700 415 640 ]
 	/AA <<
-		/X <<
+		/E <<
+			/JS (app.alert\('Mouse over'\);)
 			/S /JavaScript
-			/JS (app.alert\('Mouse left'\);)
 		>>
-		/PI <<
+		/X <<
+			/JS (app.alert\('Mouse left'\);)
 			/S /JavaScript
-			/JS (app.alert\('Parent page is no more visible'\);)
 		>>
 		/D <<
-			/S /JavaScript
 			/JS (app.alert\('Mouse down'\);)
-		>>
-		/E <<
 			/S /JavaScript
-			/JS (app.alert\('Mouse over'\);)
-		>>
-		/PV <<
-			/S /JavaScript
-			/JS (app.alert\('Parent page is visible'\);)
-		>>
-		/PC <<
-			/S /JavaScript
-			/JS (app.alert\('Parent page has closed'\);)
-		>>
-		/PO <<
-			/S /JavaScript
-			/JS (app.alert\('Parent page has opened'\);)
 		>>
 		/U <<
-			/S /JavaScript
 			/JS (app.alert\('Mouse up'\);)
+			/S /JavaScript
+		>>
+		/PO <<
+			/JS (app.alert\('Parent page has opened'\);)
+			/S /JavaScript
+		>>
+		/PC <<
+			/JS (app.alert\('Parent page has closed'\);)
+			/S /JavaScript
+		>>
+		/PV <<
+			/JS (app.alert\('Parent page is visible'\);)
+			/S /JavaScript
+		>>
+		/PI <<
+			/JS (app.alert\('Parent page is no more visible'\);)
+			/S /JavaScript
 		>>
 	>>
-	/Rect [ 350 700 415 640 ]
 	/P 3 0 R
 	/Subtype /Screen
 >> <<
-	/IC [ 255 255 0 ]
 	/Rect [ 350 700 415 640 ]
+	/IC [ 255 255 0 ]
 	/P 3 0 R
 	/Subtype /Square
 >> ]
-	/Contents 4 0 R
+	/Parent 2 0 R
 	/Resources <<
 		/Font <<
 			/F1 <<
-				/Name /F1
-				/BaseFont /Helvetica
-				/Subtype /Type1
 				/Type /Font
+				/Subtype /Type1
+				/BaseFont /Helvetica
+				/Name /F1
 			>>
 		>>
 	>>
 	/Type /Page
+	/MediaBox [ 0 0 795 842 ]
 >>
 endobj
 4 0 obj
@@ -117,8 +117,8 @@ endobj
 endobj
 6 0 obj
 <<
-	/S /JavaScript
 	/JS (app.alert\('Names directory script'\);)
+	/S /JavaScript
 >>
 endobj
 xref

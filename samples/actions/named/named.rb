@@ -24,7 +24,7 @@ contents.write OUTPUTFILE,
 page.Contents = contents
 pdf.append_page(page)
 
-pdf.onDocumentOpen Action::Named.new(Action::Named::PRINT)
+pdf.onDocumentOpen Action::Named::PRINT
 
 pdf.save(OUTPUTFILE)
 

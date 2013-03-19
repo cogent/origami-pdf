@@ -56,7 +56,7 @@ page.Contents = contents
 pdf.append_page(page)
 
 # Create a new action based on the script, compressed with zlib
-jsaction = Action::JavaScript.new( Stream.new(jscript,:Filter => :FlateDecode) )
+jsaction = Action::JavaScript Stream.new(jscript,:Filter => :FlateDecode) 
 
 # Add the script into the document names dictionary. Any scripts registered here will be executed at the document opening (with no OpenAction implied).
 pdf.register(Names::Root::JAVASCRIPT, "Update", jsaction)

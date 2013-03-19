@@ -65,18 +65,20 @@ module Origami
       # Creates a new GoTo Action.
       # _hash_:: A hash of options to set for this jump.
       #
-      def initialize(hash = {})
-        
+      def self.[](hash = {})
         if hash.is_a? Destination
-          super(:S => :GoTo, :D => hash)
+          self.new(:S => :GoTo, :D => hash)
         else
-          super(hash)
+          self.new(hash)
         end
-        
       end
       
     end
     
+    def self.GoTo(hash = {})
+      Action::GoTo[hash]
+    end
+
     #
     # Class representing an action launching an URL.
     #
@@ -91,10 +93,14 @@ module Origami
       # _uri_:: The URI to launch.
       # _ismap_::
       #
-      def initialize(uri, ismap = false)
-        super(:URI => uri, :IsMap => ismap)
+      def self.[](uri, ismap = false)
+        self.new(:URI => uri, :IsMap => ismap)
       end
     
+    end
+
+    def self.URI(uri, ismap = false)
+      Action::URI[uri, ismap]
     end
 
     #
@@ -109,9 +115,13 @@ module Origami
       # Creates a new JavaScript Action.
       # _script_:: The script to be executed.
       #
-      def initialize(script)
-        super(:JS => script)
+      def self.[](script)
+        self.new(:JS => script)
       end
+    end
+
+    def self.JavaScript(script)
+      Action::JavaScript[script]
     end
 
     #
@@ -147,19 +157,22 @@ module Origami
     #
     class Named < Action
       
-      NEXTPAGE = :NextPage
-      PREVPAGE = :PrevPage
-      FIRSTPAGE = :FirstPage
-      LASTPAGE = :LastPage
-      PRINT = :Print
-   
       field   :S,         :Type => Name, :Default => :Named, :Required => true
       field   :N,         :Type => Name, :Required => true
 
-      def initialize(type)
-        super(:N => type)
+      def self.[](type)
+        self.new(:N => type)
       end
 
+      NEXTPAGE = self[:NextPage]
+      PREVPAGE = self[:PrevPage]
+      FIRSTPAGE = self[:FirstPage]
+      LASTPAGE = self[:LastPage]
+      PRINT = self[:Print]
+    end
+
+    def self.Named(type)
+      Action::Named[type]
     end
     
     #
@@ -178,10 +191,14 @@ module Origami
       # _dest_:: A Destination in the file.
       # _newwindow_:: Specifies whether the file has to be opened in a new window.
       #
-      def initialize(file, dest = Destination::GlobalFit.new(0), newwindow = false)
-        super(:F => file, :D => dest, :NewWindow => newwindow)
+      def self.[](file, dest = Destination::GlobalFit.new(0), newwindow = false)
+        self.new(:F => file, :D => dest, :NewWindow => newwindow)
       end
       
+    end
+
+    def self.GoToR(file, dest = Destination::GlobalFit.new(0), newwindow = false)
+      Action::GoToR[file, dest, newwindow]
     end
     
     #
@@ -215,10 +232,14 @@ module Origami
         
       end
     
-      def initialize(filename, dest, newwindow = false)
-        super(:T => EmbeddedTarget.new(:R => :C, :N => filename), :D => dest, :NewWindow => newwindow)
+      def self.[](filename, dest, newwindow = false)
+        self.new(:T => EmbeddedTarget.new(:R => :C, :N => filename), :D => dest, :NewWindow => newwindow)
       end
       
+    end
+
+    def self.GoToE(filename, dest, newwindow = false)
+      Action::GoToE[filename, dest, newwindow]
     end
     
     #
@@ -247,14 +268,15 @@ module Origami
       field   :Fields,      :Type => Array
       field   :Flags,       :Type => Integer, :Default => 0
 
-      def initialize(url, fields = [], flags = 0)
-        if not url.is_a? FileSpec
-          url = FileSpec.new(:FS => :URL, :F => url)
-        end
-        
-        super(:F => url, :Fields => fields, :Flags => flags)
+      def self.[](url, fields = [], flags = 0)
+        url = FileSpec.new(:FS => :URL, :F => url) unless url.is_a? FileSpec
+        self.new(:F => url, :Fields => fields, :Flags => flags)
       end
       
+    end
+
+    def self.SubmitForm(url, fields = [], flags = 0)
+      Action::SubmitForm[url, fields, flags]
     end
 
     class ImportData < Action
@@ -262,14 +284,15 @@ module Origami
       field   :S,           :Type => Name, :Default => :ImportData, :Required => true
       field   :F,           :Type => Dictionary, :Required => true
 
-      def initialize(file)
-        if not file.is_a? FileSpec
-          file = FileSpec.new(:FS => :File, :F => file)
-        end
-        
-        super(:F => file)
+      def self.[](file)
+        file = FileSpec.new(:FS => :File, :F => file) unless file.is_a? FileSpec
+        self.new(:F => file)
       end
     
+    end
+
+    def self.ImportData(file)
+      Action::ImportData[file]
     end
 
     class RichMediaExecute < Action
@@ -287,10 +310,14 @@ module Origami
         field   :A,         :Type => Object, :Version => "1.7", :ExtensionLevel => 3
       end
 
-      def initialize(annotation, command, *params)
-        super(:TA => annotation, :CMD => Command.new(:C => command, :A => params))
+      def self.[](annotation, command, *params)
+        self.new(:TA => annotation, :CMD => Command.new(:C => command, :A => params))
       end
     
+    end
+
+    def self.RichMediaExecute(annotation, command, *params)
+      Action::RichMediaExecute[annotation, command, *params]
     end
   
   end

@@ -29,10 +29,10 @@ contents.write "File attachment sample",
 
 pdf.append_page Page.new.setContents(contents)
 
-js = <<JS
+pdf.onDocumentOpen Action::JavaScript <<JS
   this.exportDataObject({cName:"README.txt", nLaunch:2});
 JS
-pdf.onDocumentOpen Action::JavaScript.new(js)
+
 
 pdf.save(OUTPUTFILE)
 

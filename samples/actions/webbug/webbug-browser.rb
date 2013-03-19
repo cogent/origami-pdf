@@ -61,7 +61,7 @@ page = Page.new.setContents( contents )
 pdf.append_page(page)
 
 # Starting action
-pdf.onDocumentOpen Action::URI.new(URL)
+pdf.onDocumentOpen Action::URI[URL]
 
 pdf.save(OUTPUTFILE)
 

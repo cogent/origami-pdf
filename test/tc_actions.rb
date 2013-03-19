@@ -4,7 +4,7 @@ require 'test/unit'
     def setup
       @target = PDF.new
       @page = Page.new
-      @action = Action::JavaScript.new "app.alert(null);"
+      @action = Action::JavaScript "app.alert(null);"
     end
 
     # def teardown

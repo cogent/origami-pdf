@@ -15,7 +15,7 @@ index = 1
 pages = pdf.pages
 
 pages.each do |page|
-  page.onOpen(Action::GoTo.new(Destination::GlobalFit.new pages[index % pages.size].reference))
+  page.onOpen Action::GoTo Destination::GlobalFit.new pages[index % pages.size]
 
   index = index + 1
 end

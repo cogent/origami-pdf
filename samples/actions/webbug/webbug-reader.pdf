@@ -1,16 +1,16 @@
 %PDF-1.1
 1 0 obj
 <<
+	/Pages 2 0 R
 	/OpenAction <<
-		/Fields [ ]
 		/F <<
 			/FS /URL
 			/F (http://localhost/webbug-reader.php)
 		>>
-		/S /SubmitForm
+		/Fields [ ]
 		/Flags 12
+		/S /SubmitForm
 	>>
-	/Pages 2 0 R
 	/Type /Catalog
 >>
 endobj
@@ -23,20 +23,20 @@ endobj
 endobj
 3 0 obj
 <<
-	/MediaBox [ 0 0 795 842 ]
-	/Parent 2 0 R
 	/Contents 4 0 R
+	/Parent 2 0 R
 	/Resources <<
 		/Font <<
 			/F1 <<
-				/Name /F1
-				/BaseFont /Helvetica
-				/Subtype /Type1
 				/Type /Font
+				/Subtype /Type1
+				/BaseFont /Helvetica
+				/Name /F1
 			>>
 		>>
 	>>
 	/Type /Page
+	/MediaBox [ 0 0 795 842 ]
 >>
 endobj
 4 0 obj

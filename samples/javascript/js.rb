@@ -23,12 +23,12 @@ if defined?(PDF::JavaScript::Engine)
   )
 
   # Example of JS payload
-  js = <<-JS
+  pdf.onDocumentOpen Action::JavaScript <<-JS
     if ( app.viewerVersion == 8 )
       eval("this.exportDataObject({cName:'README.txt', nLaunch:2});");
     this.closeDoc();
   JS
-  pdf.onDocumentOpen Action::JavaScript.new(js)
+  
 
   # Tweaking the engine options
   pdf.js_engine.options[:log_method_calls] = true
