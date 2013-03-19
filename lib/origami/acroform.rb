@@ -147,7 +147,7 @@ module Origami
       
     def self.included(receiver) #:nodoc:
 
-      receiver.field   :FT,     :Type => Name, :Default => Type::TEXT, :Required => true
+      receiver.field   :FT,     :Type => Name, :Required => true
       receiver.field   :Parent, :Type => Dictionary
       receiver.field   :Kids,   :Type => Array
       receiver.field   :T,      :Type => String
@@ -254,7 +254,7 @@ module Origami
       end
       
       field   :Type,            :Type => Name, :Default => :SigFieldLock
-      field   :Action,          :Type => Name, :Default => Actions::ALL, :Required => true
+      field   :Action,          :Type => Name, :Required => true
       field   :Fields,          :Type => Array
 
       def pre_build

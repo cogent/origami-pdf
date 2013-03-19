@@ -85,55 +85,6 @@ module Origami
     OPTIONS[:use_openssl] = false
   end
 
-  DICT_SPECIAL_TYPES = #:nodoc:
-  { 
-    :Catalog => Catalog, 
-    :Pages => PageTreeNode, 
-    :Page => Page, 
-    :Filespec => FileSpec, 
-    :Action => Action,
-    :Font => Font,
-    :FontDescriptor => FontDescriptor,
-    :Encoding => Encoding,
-    :Annot => Annotation,
-    :Border => Annotation::BorderStyle,
-    :Outlines => Outline,
-    :OutputIntent => OutputIntent,
-    :Sig => Signature::DigitalSignature,
-    :SigRef => Signature::Reference,
-    :SigFieldLock => Field::SignatureLock,
-    :SV => Field::SignatureSeedValue,
-    :SVCert => Field::CertificateSeedValue,
-    :ExtGState => Graphics::ExtGState,
-    :RichMediaSettings => Annotation::RichMedia::Settings,
-    :RichMediaActivation => Annotation::RichMedia::Activation,
-    :RichMediaDeactivation => Annotation::RichMedia::Deactivation,
-    :RichMediaAnimation => Annotation::RichMedia::Animation,
-    :RichMediaPresentation => Annotation::RichMedia::Presentation,
-    :RichMediaWindow => Annotation::RichMedia::Window,
-    :RichMediaPosition => Annotation::RichMedia::Position,
-    :RichMediaContent => Annotation::RichMedia::Content,
-    :RichMediaConfiguration => Annotation::RichMedia::Configuration,
-    :RichMediaInstance => Annotation::RichMedia::Instance,
-    :RichMediaParams => Annotation::RichMedia::Parameters,
-    :CuePoint => Annotation::RichMedia::CuePoint
-  }
-  
-  STM_SPECIAL_TYPES = #:nodoc:
-  {
-    :ObjStm => ObjectStream, 
-    :EmbeddedFile => EmbeddedFileStream,
-    :Metadata => MetadataStream,
-    :XRef => XRefStream,
-    :"3D" => U3DStream
-  }
-  
-  STM_XOBJ_SUBTYPES = #:nodoc:
-  {
-    :Image => Graphics::ImageXObject,
-    :Form => Graphics::FormXObject
-  }
-
   class InvalidPDFError < Exception #:nodoc:
   end
 	

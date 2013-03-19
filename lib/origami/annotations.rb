@@ -34,7 +34,7 @@ module Origami
     include StandardObject
     
     field   :Type,            :Type => Name, :Default => :Annot
-    field   :Subtype,         :Type => Name, :Default => :Text, :Required => true
+    field   :Subtype,         :Type => Name, :Required => true
     field   :Rect,            :Type => Array, :Default => [ 0 , 0 , 0 , 0 ], :Required => true
     field   :Contents,        :Type => String
     field   :P,               :Type => Dictionary, :Version => "1.3"
@@ -257,7 +257,7 @@ module Origami
 
       include Markup
 
-      field   :Subtype,         :Type => Name, :Default => :Square, :Required => true
+      field   :Subtype,         :Type => Name, :Required => true
       field   :BS,              :Type => Dictionary
       field   :IC,              :Type => Array
       field   :BE,              :Type => Dictionary, :Version => "1.5"
@@ -266,6 +266,7 @@ module Origami
     end
     
     class Square < Shape
+      field   :Subtype,         :Type => Name, :Default => :Square, :Required => true
     end
     
     class Circle < Shape

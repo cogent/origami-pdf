@@ -39,6 +39,7 @@ module Origami
       @@regexp_open = Regexp.new(WHITESPACES + Regexp.escape(TOKENS.first) + WHITESPACES)
       @@regexp_close = Regexp.new(WHITESPACES + Regexp.escape(TOKENS.last) + WHITESPACES)
       
+      @@cast_fingerprints = {}
       attr_reader :strings_cache, :names_cache, :xref_cache
 
       #
@@ -99,13 +100,7 @@ module Origami
        
         dict = 
           if Origami::OPTIONS[:enable_type_guessing]
-            type = pairs[Name.new(:Type)]
-            if type.is_a?(Name) and DICT_SPECIAL_TYPES.include?(type.value)
-              DICT_SPECIAL_TYPES[type.value].new(pairs)
-            else
-              Dictionary.new(pairs)
-            end
-
+            self.guess_type(pairs).new(pairs)
           else
             Dictionary.new(pairs)
           end
@@ -194,6 +189,29 @@ module Origami
         end
       end
 
+      def self.add_type_info(typeclass, key, value) #:nodoc:
+        if not @@cast_fingerprints.has_key?(typeclass) and typeclass.superclass != Dictionary and
+           @@cast_fingerprints.has_key?(typeclass.superclass)
+          @@cast_fingerprints[typeclass] = @@cast_fingerprints[typeclass.superclass].dup
+        end
+
+        @@cast_fingerprints[typeclass] ||= {}
+        @@cast_fingerprints[typeclass][key.to_o] = value.to_o
+      end
+
+      def self.guess_type(hash) #:nodoc:
+        best_type = Dictionary
+
+        @@cast_fingerprints.each_pair do |typeclass, keys|
+          best_type = typeclass if keys.all? { |k,v| 
+            hash.has_key?(k) and hash[k] == v
+          } and typeclass < best_type
+        end
+
+        best_type
+      end
+
     end #class
  
-end # Origami
+end
+# Origami

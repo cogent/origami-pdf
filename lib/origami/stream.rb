@@ -44,6 +44,8 @@ module Origami
     @@regexp_open = Regexp.new(WHITESPACES + TOKENS.first)
     @@regexp_close = Regexp.new(TOKENS.last)
 
+    @@cast_fingerprints = {}
+
     #
     # Actually only 5 first ones are implemented, other ones are mainly about image data processing (JPEG, JPEG2000 ... )
     #
@@ -141,23 +143,7 @@ module Origami
        
       stm = 
         if Origami::OPTIONS[:enable_type_guessing]
-          type, subtype = dictionary[:Type], dictionary[:Subtype]
-          
-          if type.is_a?(Name)
-            if STM_SPECIAL_TYPES.include?(type.value)
-              STM_SPECIAL_TYPES[type.value].new("", dictionary.to_h)
-            else
-              if type == :XObject and subtype.is_a?(Name) and STM_XOBJ_SUBTYPES.include?(subtype.value)
-                STM_XOBJ_SUBTYPES[subtype.value].new("", dictionary.to_h)
-              else
-                Stream.new('', dictionary.to_h)
-              end
-            end
-                    
-          else
-            Stream.new('', dictionary.to_h)
-          end
-
+          self.guess_type(dictionary).new('', dictionary.to_h)
         else
           Stream.new('', dictionary.to_h)
         end
@@ -178,6 +164,28 @@ module Origami
 
       stm
     end   
+
+    def self.add_type_info(typeclass, key, value) #:nodoc:
+      if not @@cast_fingerprints.has_key?(typeclass) and typeclass.superclass != Stream and
+         @@cast_fingerprints.has_key?(typeclass.superclass)
+        @@cast_fingerprints[typeclass] = @@cast_fingerprints[typeclass.superclass].dup
+      end
+
+      @@cast_fingerprints[typeclass] ||= {}
+      @@cast_fingerprints[typeclass][key.to_o] = value.to_o
+    end
+
+    def self.guess_type(hash) #:nodoc:
+      best_type = Stream
+
+      @@cast_fingerprints.each_pair do |typeclass, keys|
+        best_type = typeclass if keys.all? { |k,v| 
+          hash.has_key?(k) and hash[k] == v 
+        } and typeclass < best_type
+      end
+
+      best_type
+    end
 
     def set_predictor(predictor, colors = 1, bitspercomponent = 8, columns = 1)
       

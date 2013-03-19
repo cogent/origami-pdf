@@ -33,7 +33,7 @@ module Origami
     include StandardObject
    
     field   :Type,                    :Type => Name, :Default => :Font, :Required => true
-    field   :Subtype,                 :Type => Name, :Default => :Type1, :Required => true
+    field   :Subtype,                 :Type => Name, :Required => true
     field   :Name,                    :Type => Name
     field   :FirstChar,               :Type => Integer
     field   :LastChar,                :Type => Integer
@@ -49,7 +49,7 @@ module Origami
     #
     class Type1 < Font
 
-      field   :BaseFont,              :Type => Name, :Default => :Helvetica, :Required => true
+      field   :BaseFont,              :Type => Name, :Required => true
       field   :Subtype,               :Type => Name, :Default => :Type1, :Required => true
       
       #

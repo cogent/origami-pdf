@@ -182,8 +182,7 @@ module Origami
     # A class representing a file outside the current PDF file.
     #
     class ExternalFile < FileSpec
-     
-      field   :Type,        :Type => Name, :Default => :FileSpec, :Required => true
+      field   :Type,        :Type => Name, :Default => :FileSpec #, :Required => true
 
       #
       # Creates a new external file specification.
