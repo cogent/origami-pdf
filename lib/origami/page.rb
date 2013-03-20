@@ -27,6 +27,9 @@ module Origami
 
   class PDF
 
+    #
+    # Appends a page or list of pages to the end of the page tree.
+    #
     def append_page(page = Page.new, *more)
       raise InvalidPDFError, "Invalid page tree" if not self.Catalog or not self.Catalog.Pages or not self.Catalog.Pages.is_a?(PageTreeNode)
       
@@ -52,6 +55,9 @@ module Origami
       self
     end
 
+    #
+    # Inserts a page at position _index_ into the document.
+    #
     def insert_page(index, page)
       raise InvalidPDFError, "Invalid page tree" if not self.Catalog or not self.Catalog.Pages or not self.Catalog.Pages.is_a?(PageTreeNode)
 
@@ -170,7 +176,29 @@ module Origami
     
       self
     end
-    
+
+    def ls_resources(type)
+      target = self.is_a?(Resources) ? self : (self.Resources ||= Resources.new)
+      
+      target.send(type) || {}  
+    end
+
+    def extgstates; ls_resources(Resources::EXTGSTATE) end
+    def colorspaces; ls_resources(Resources::COLORSPACE) end
+    def patterns; ls_resources(Resources::PATTERN) end
+    def shadings; ls_resources(Resources::SHADING) end
+    def xobjects; ls_resources(Resources::XOBJECT) end
+    def fonts; ls_resources(Resources::FONT) end
+    def properties; ls_resources(Resources::PROPERTIES) end
+    def resources;
+      self.extgstates.
+        merge self.colorspaces.
+        merge self.patterns.
+        merge self.shadings.
+        merge self.xobjects.
+        merge self.fonts.
+        merge self.properties
+    end 
   end
 
   #
@@ -181,14 +209,22 @@ module Origami
     include StandardObject
     include ResourcesHolder
 
-    field   :ExtGState,   :Type => Dictionary
-    field   :ColorSpace,  :Type => Dictionary
-    field   :Pattern,     :Type => Dictionary
-    field   :Shading,     :Type => Dictionary, :Version => "1.3"
-    field   :XObject,     :Type => Dictionary
-    field   :Font,        :Type => Dictionary
+    EXTGSTATE     = :ExtGState
+    COLORSPACE    = :ColorSpace
+    PATTERN       = :Pattern
+    SHADING       = :Shading
+    XOBJECT       = :XObject
+    FONT          = :Font
+    PROPERTIES    = :Properties 
+
+    field   EXTGSTATE,    :Type => Dictionary
+    field   COLORSPACE,   :Type => Dictionary
+    field   PATTERN,      :Type => Dictionary
+    field   SHADING,      :Type => Dictionary, :Version => "1.3"
+    field   XOBJECT,      :Type => Dictionary
+    field   FONT,         :Type => Dictionary
     field   :ProcSet,     :Type => Array
-    field   :Properties,  :Type => Dictionary, :Version => "1.2"
+    field   PROPERTIES,   :Type => Dictionary, :Version => "1.2"
 
     def pre_build
       unless self.Font
