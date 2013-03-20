@@ -167,7 +167,17 @@ module Origami
     class << self
       
       def [](coords)
-        corners = coords.values_at(:llx, :lly, :urx, :ury)
+        corners = 
+          if [ :llx, :lly, :urx, :ury ].all? {|p| coords.include?(p)}
+            coords.values_at(:llx, :lly, :urx, :ury)
+          elsif [ :width, :height ].all? {|p| coords.include?(p)}
+            width, height = coords.values_at(:width, :height)
+            x = coords.values_at(:x).first || 0
+            y = coords.values_at(:y).first || 0
+            [ x, y, x+width, y+height ]
+          else
+            raise ArgumentError, "Bad arguments for #{self.class}: #{coords.inspect}"
+          end
         
         unless corners.all? { |corner| corner.is_a?(Numeric) }
           raise TypeError, "All coords must be numbers"

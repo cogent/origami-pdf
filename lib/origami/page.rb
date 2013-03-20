@@ -355,12 +355,38 @@ module Origami
     
     include StandardObject
     include ResourcesHolder
+
+    module Format
+      A0 = Rectangle[:width => 2384, :height => 3370]
+      A1 = Rectangle[:width => 1684, :height => 2384]
+      A2 = Rectangle[:width => 1191, :height => 1684]
+      A3 = Rectangle[:width => 842, :height => 1191]
+      A4 = Rectangle[:width => 595, :height => 842]
+      A5 = Rectangle[:width => 420, :height => 595]
+      A6 = Rectangle[:width => 298, :height => 420]
+      A7 = Rectangle[:width => 210, :height => 298]
+      A8 = Rectangle[:width => 147, :height => 210]
+      A9 = Rectangle[:width => 105, :height => 147]
+      A10 = Rectangle[:width => 74, :height => 105]
+
+      B0 = Rectangle[:width => 2836, :height => 4008]
+      B1 = Rectangle[:width => 2004, :height => 2835]
+      B2 = Rectangle[:width => 1417, :height => 2004]
+      B3 = Rectangle[:width => 1001, :height => 1417]
+      B4 = Rectangle[:width => 709, :height => 1001]
+      B5 = Rectangle[:width => 499, :height => 709]
+      B6 = Rectangle[:width => 354, :height => 499]
+      B7 = Rectangle[:width => 249, :height => 354]
+      B8 = Rectangle[:width => 176, :height => 249]
+      B9 = Rectangle[:width => 125, :height => 176]
+      B10 = Rectangle[:width => 88, :height => 125]
+    end
    
     field   :Type,                  :Type => Name, :Default => :Page, :Required => true
     field   :Parent,                :Type => Dictionary, :Required => true
     field   :LastModified,          :Type => String, :Version => "1.3"
     field   :Resources,             :Type => Dictionary, :Required => true 
-    field   :MediaBox,              :Type => Array, :Default => Rectangle[ :llx => 0, :lly => 0, :urx => 795, :ury => 842 ], :Required => true
+    field   :MediaBox,              :Type => Array, :Default => Format::A4, :Required => true
     field   :CropBox,               :Type => Array
     field   :BleedBox,              :Type => Array, :Version => "1.3"
     field   :TrimBox,               :Type => Array, :Version => "1.3"
