@@ -340,7 +340,7 @@ module Origami
       # restore saved values
       @pdf = saved_pdf
       @parent = saved_parent
-      copyobj.set_pdf(saved_pdf)
+      copyobj.set_pdf(saved_pdf) if copyobj.is_indirect?
       copyobj.parent = parent
 
       copyobj

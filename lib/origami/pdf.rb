@@ -73,9 +73,10 @@ module Origami
   #
   OPTIONS   = 
   {
-    :enable_type_checking => true,  # set to false to disable type consistency checks during compilation.
-    :enable_type_guessing => true,  # set to false to prevent the parser to guess the type of special dictionary and streams (not recommended).
-    :use_openssl => true            # set to false to use Origami crypto backend.
+    :enable_type_checking => true,      # set to false to disable type consistency checks during compilation.
+    :enable_type_guessing => true,      # set to false to prevent the parser to guess the type of special dictionary and streams (not recommended).
+    :use_openssl => true,               # set to false to use Origami crypto backend.
+    :ignore_bad_references => false,    # set to interpret invalid references as Null objects, instead of raising an exception.
   }
   
   begin

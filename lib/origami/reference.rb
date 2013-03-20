@@ -64,7 +64,6 @@ module Origami
     end
     
     def solve
-      
       pdfdoc = self.pdf
 
       if pdfdoc.nil?
@@ -73,11 +72,11 @@ module Origami
       
       target = pdfdoc.get_object(self)
       
-      if target.nil?
+      if target.nil? and not Origami::OPTIONS[:ignore_bad_references]
         raise InvalidReferenceError, "Cannot resolve reference : #{self.to_s}"
       end
 
-      target
+      target or Null.new
     end
     
     def eql?(ref) #:nodoc
