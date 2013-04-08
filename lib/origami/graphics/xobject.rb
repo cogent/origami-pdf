@@ -451,6 +451,7 @@ module Origami
 
     class FormXObject < ContentStream
       include XObject
+      include ResourcesHolder
 
       field   :Subtype,       :Type => Name, :Default => :Form, :Required => true
       field   :FormType,      :Type => Integer, :Default => 1

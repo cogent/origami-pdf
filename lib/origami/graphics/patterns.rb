@@ -41,6 +41,7 @@ module Origami
       
       class Tiling < ContentStream
         include Pattern
+        include ResourcesHolder
 
         module PaintType
           COLOURED    = 1
