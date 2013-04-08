@@ -41,11 +41,11 @@ module PDFWalker
       }
     end
 
-    def show_raw_img(data, w, h, bpp, bpr)
+    def show_raw_img(data, w, h, bpc, bpr)
       set_default_size w,h
 
       pixbuf = Gdk::Pixbuf.new data, 
-        Gdk::Pixbuf::ColorSpace::RGB, false, bpp,
+        Gdk::Pixbuf::ColorSpace::RGB, false, bpc,
         w, h,
         bpr
 

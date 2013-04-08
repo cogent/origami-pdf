@@ -153,8 +153,16 @@ module PDFWalker
         :Callback => lambda { |widget, viewer, path|
           stm = viewer.model.get_value(viewer.model.get_iter(path), viewer.class::OBJCOL)
           w,h = stm.Width, stm.Height
+          colors = 
+            case stm.ColorSpace
+              when :DeviceGray.to_o then 1
+              when :DeviceRGB.to_o then 3
+              when :DeviceCMYK.to_o then 4
+            else
+              1
+            end
           bpc = stm.BitsPerComponent || 8
-          bpr = (bpc >> 3) * 3 * w
+          bpr = (w * colors * bpc + 7) >> 3
           data = stm.data
 
           begin
@@ -162,7 +170,7 @@ module PDFWalker
             if stm.Filter == :DCTDecode or (stm.Filter.is_a?(Array) and stm.Filter[0] == :DCTDecode)
               imgview.show_compressed_img data
             else
-              imgview.show_raw_img data, w, h, bpp, bpr
+              imgview.show_raw_img data, w, h, bpc, bpr
             end
           rescue Exception => e
             viewer.parent.error("#{e.class}: #{e.message}")
