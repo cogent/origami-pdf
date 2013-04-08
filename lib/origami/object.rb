@@ -291,8 +291,8 @@ module Origami
       if not bool
         @no = @generation = 0
         @pdf = nil
-        @xref_cache.clear
       end
+
       @indirect = bool
       self
     end

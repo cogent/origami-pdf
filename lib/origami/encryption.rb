@@ -163,20 +163,18 @@ module Origami
                       obj.equal?(encrypt_dict[:Perms]) or
                       (obj.parent.is_a?(Signature::DigitalSignature) and obj.equal?(obj.parent[:Contents]))
 
-              obj.extend(Encryption::EncryptedString)
+              obj.extend(Encryption::EncryptedString) unless obj.is_a?(Encryption::EncryptedString)
               obj.encryption_handler = handler
               obj.encryption_key = encryption_key
               obj.algorithm = str_algo
-              obj.decrypted = false
               obj.decrypt!
 
             when Stream
               next if obj.is_a?(XRefStream) or (not encrypt_metadata and obj.equal?(metadata))
-              obj.extend(Encryption::EncryptedStream)
+              obj.extend(Encryption::EncryptedStream) unless obj.is_a?(Encryption::EncryptedStream)
               obj.encryption_handler = handler
               obj.encryption_key = encryption_key
               obj.algorithm = stm_algo
-              obj.decrypted = false
           end
         end
       end
