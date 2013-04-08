@@ -1,5 +1,4 @@
 =begin
-
 = File
 	dictionary.rb
 
@@ -187,6 +186,19 @@ module Origami
           obj = self[field]; 
           obj.is_a?(Reference) ? obj.solve : obj
         end
+      end
+
+      def copy
+        copy = self.class.new
+        self.each_pair do |k,v|
+          copy[k] = v.copy 
+        end 
+
+        copy.parent = @parent
+        copy.no, copy.generation = @no, @generation
+        copy.set_indirect(true) if is_indirect?
+        copy.set_pdf(@pdf) if is_indirect?
+        copy
       end
 
       def self.add_type_info(typeclass, key, value) #:nodoc:

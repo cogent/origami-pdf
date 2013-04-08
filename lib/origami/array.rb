@@ -155,6 +155,19 @@ module Origami
     
     alias value to_a
 
+    def copy
+      copy = self.class.new
+      self.each do |obj|
+        copy << obj.copy
+      end
+
+      copy.parent = @parent
+      copy.no, copy.generation = @no, @generation
+      copy.set_indirect(true) if is_indirect?
+      copy.set_pdf(@pdf) if is_indirect?
+      copy
+    end
+
     def real_type ; Origami::Array end
 
   end

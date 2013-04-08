@@ -291,6 +291,7 @@ module Origami
       if not bool
         @no = @generation = 0
         @pdf = nil
+        @xref_cache.clear
       end
       @indirect = bool
       self
@@ -332,6 +333,8 @@ module Origami
     def copy
       saved_pdf = @pdf
       saved_parent = @parent
+      
+      saved_xref_cache = @xref_cache
       @pdf = @parent = nil # do not process parent object and document in the copy
 
       # Perform the recursive copy (quite dirty).
@@ -340,6 +343,7 @@ module Origami
       # restore saved values
       @pdf = saved_pdf
       @parent = saved_parent
+
       copyobj.set_pdf(saved_pdf) if copyobj.is_indirect?
       copyobj.parent = parent
 
@@ -406,6 +410,7 @@ module Origami
       exported_obj.no = exported_obj.generation = 0
       exported_obj.set_pdf(nil) if exported_obj.is_indirect?
       exported_obj.parent = nil
+      exported_obj.xref_cache.clear
       
       exported_obj
     end

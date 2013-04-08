@@ -180,7 +180,12 @@ module Origami
     def ls_resources(type)
       target = self.is_a?(Resources) ? self : (self.Resources ||= Resources.new)
       
-      target.send(type) || {}  
+      rsrc = {}
+      (target.send(type) || {}).each_pair do |name, obj|
+        rsrc[name.value] = obj.solve
+      end
+
+      rsrc
     end
 
     def extgstates; ls_resources(Resources::EXTGSTATE) end
@@ -226,16 +231,16 @@ module Origami
     field   :ProcSet,     :Type => Array
     field   PROPERTIES,   :Type => Dictionary, :Version => "1.2"
 
-    def pre_build
-      unless self.Font
-        fnt = Font::Type1::Standard::Helvetica.new.pre_build
-        fnt.Name = :F1
-        
-        add_font(fnt.Name, fnt)
-      end
-      
-      super
-    end
+    #def pre_build
+    #  unless self.Font
+    #    fnt = Font::Type1::Standard::Helvetica.new.pre_build
+    #    fnt.Name = :F1
+    #    
+    #    add_font(fnt.Name, fnt)
+    #  end
+    #  
+    #  super
+    #end
     
   end
 
@@ -656,3 +661,4 @@ module Origami
   end
   
 end
+
