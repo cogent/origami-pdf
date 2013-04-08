@@ -107,7 +107,7 @@ module PDFWalker
             expand_row(path, false)
           end
           
-          goto(obj.solve) if obj.is_a?(Origami::Reference)
+          goto(obj) if obj.is_a?(Origami::Reference)
         end
       }
       
@@ -136,7 +136,13 @@ module PDFWalker
         if obj.is_a?(Name) and obj.parent.is_a?(Dictionary) and obj.parent.has_key?(obj)
           obj = obj.parent[obj]
         elsif obj.is_a?(Reference)
-          obj = obj.solve
+          obj = 
+            begin 
+              obj.solve
+            rescue InvalidReferenceError
+              @parent.error("Object not found : #{obj}")
+              return
+            end
         end
 
         @treestore.each { |model, path, iter|
