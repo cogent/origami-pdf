@@ -273,7 +273,8 @@ module Origami
             def modDate; @doc.mod_date.to_s end
           end
 
-          def initialize(engine, pdf)
+          def initialize(*args)
+            engine, pdf = args # XXX: Bypass therubyracer bug #238. Temporary.
             super(engine)
 
             @pdf = pdf
