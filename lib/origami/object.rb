@@ -39,14 +39,6 @@ class Array #:nodoc:
   def to_o
     Origami::Array.new(self)
   end
-  
-  def shuffle
-    sort_by { rand }
-  end
-  
-  def shuffle!
-    self.replace shuffle
-  end  
 end
 
 class Float #:nodoc:
@@ -126,7 +118,7 @@ module Origami
       def fields
         @fields
       end
-      
+
       def field(name, attributes)
         if attributes[:Required] == true and attributes.has_key?(:Default) and attributes[:Type] == Name
           self.add_type_info(self, name, attributes[:Default])
@@ -221,7 +213,7 @@ module Origami
         
         if not self[field].nil? and not attributes[:Type].nil?
           types = attributes[:Type].is_a?(::Array) ? attributes[:Type] : [ attributes[:Type] ]
-          if not self[field].is_a?(Reference) and types.all? {|type| not self[field].is_a?(type)}
+          if not self[field].is_a?(Reference) and types.all? {|type| not self[field].is_a?(type.native_type)}
             puts "Warning: in object #{self.class}, field `#{field.to_s}' has unexpected type #{self[field].class}" 
           end
         end
@@ -610,7 +602,15 @@ module Origami
     def type
       self.class.to_s.split("::").last.to_sym
     end
-    alias real_type type
+
+    def self.native_type; Origami::Object end #:nodoc:
+
+    #
+    # Returns the native PDF type of this Object.
+    #
+    def native_type
+      self.class.native_type
+    end
     
     #
     # Outputs this object into PDF code.

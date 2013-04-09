@@ -352,7 +352,7 @@ module Origami
       @dictionary.each_key(&b)
     end
   
-    def real_type ; Stream end
+    def self.native_type ; Stream end
 
     private
 

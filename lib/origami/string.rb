@@ -114,12 +114,20 @@ module Origami
 
     end
 
-    include Origami::Object
+    module ClassMethods #:nodoc:all
+      def native_type; Origami::String end
+    end
 
+    def self.included(receiver) #:nodoc:
+      receiver.extend(ClassMethods)
+    end
+    
+    def self.native_type; Origami::String end #:nodoc:
+
+    include Origami::Object
+    
     attr_accessor :encoding
     
-    def real_type ; Origami::String end
-
     def initialize(str) #:nodoc:
       infer_encoding  
       super(str)
@@ -233,6 +241,7 @@ module Origami
 
       to_str
     end
+
   end
  
   class InvalidByteStringObjectError < InvalidObjectError #:nodoc:

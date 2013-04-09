@@ -173,7 +173,6 @@ module Origami
 
       alias each each_value
 
-      def real_type ; Dictionary end
 
       alias value to_h
 
@@ -200,6 +199,8 @@ module Origami
         copy.set_pdf(@pdf) if is_indirect?
         copy
       end
+
+      def self.native_type; Dictionary end
 
       def self.add_type_info(typeclass, key, value) #:nodoc:
         if not @@cast_fingerprints.has_key?(typeclass) and typeclass.superclass != Dictionary and

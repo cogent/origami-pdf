@@ -1088,6 +1088,7 @@ module Origami
          
           if self.R < 5
             padded = pad_password(userpassword)
+            padded.force_encoding('binary') if RUBY_VERSION > '1.8'
 
             padded << self.O
             padded << [ self.P ].pack("i")
@@ -1184,12 +1185,17 @@ module Origami
               self.O = compute_hardened_hash(opass, ovs, self.U) + ovs + oks
             end
 
+            ones = "\xff" * 4
+            ones.force_encoding("binary") if RUBY_VERSION > '1.8'
+            zeros = "\x00" * 4
+            zeros.force_encoding("binary") if RUBY_VERSION > '1.8'
+
             perms = 
               [ self.P ].pack("V") +                              # 0-3
-              "\xff" * 4 +                                        # 4-7
+              ones +                                              # 4-7
               (self.EncryptMetadata == true ? "T" : "F") +        # 8
               "adb" +                                             # 9-11
-              "\x00" * 4                                          # 12-15
+              zeros                                               # 12-15
 
             self.Perms = AES.new(file_key, iv, false).encrypt(perms)[iv.size, 16]
 
@@ -1292,7 +1298,9 @@ module Origami
             
             19.times { |i| user_key = ARC4.encrypt(xor(key,i+1), user_key) }
             
-            user_key.ljust(32, "\xFF")
+            pad_char = "\xFF"
+            pad_char.force_encoding("binary") if RUBY_VERSION > '1.8'
+            user_key.ljust(32, pad_char)
           end
         end
 

@@ -168,7 +168,7 @@ module Origami
       copy
     end
 
-    def real_type ; Origami::Array end
+    def self.native_type ; Origami::Array end
 
   end
 

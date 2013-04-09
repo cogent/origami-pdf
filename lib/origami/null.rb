@@ -68,7 +68,7 @@ module Origami
       super(TOKENS.first)
     end
 
-    def real_type ; Null end
+    def self.native_type ; Null end
     
   end
   

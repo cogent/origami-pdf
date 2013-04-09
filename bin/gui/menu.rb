@@ -187,7 +187,7 @@ module PDFWalker
         if obj.is_a?(Graphics::ImageXObject)
           :Image
         else
-          obj.real_type.to_s.split("::").last.to_sym
+          obj.native_type.to_s.split("::").last.to_sym
         end
       else case obj
         when Origami::PDF

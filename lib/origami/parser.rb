@@ -182,8 +182,8 @@ module Origami
         return if obj.nil?
         
         trace "Read #{obj.type} object#{
-          if obj.type != obj.real_type
-            " (" + obj.real_type.to_s.split('::').last + ")" 
+          if obj.class != obj.native_type
+            " (" + obj.native_type.to_s.split('::').last + ")" 
           end
         }, #{obj.reference}"
 

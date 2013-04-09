@@ -109,7 +109,7 @@ module Origami
       self
     end
 
-    def real_type ; Reference end
+    def self.native_type ; Reference end
 
   end
 

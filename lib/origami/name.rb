@@ -163,7 +163,7 @@ module Origami
       end
     end
     
-    def real_type ; Name end
+    def self.native_type ; Name end
 
   end
 

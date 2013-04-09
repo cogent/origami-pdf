@@ -82,7 +82,7 @@ module Origami
       @value
     end
 
-    def real_type ; Boolean end
+    def self.native_type ; Boolean end
     
     def false?
       @value == false

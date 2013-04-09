@@ -285,7 +285,7 @@ module PDFWalker
       obj = @treestore.append(container)
       @treestore.set_value(obj, OBJCOL, object)
       
-      type = object.real_type.to_s.split('::').last.to_sym
+      type = object.native_type.to_s.split('::').last.to_sym
       
       if name.nil?
         name = 
