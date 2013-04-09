@@ -457,7 +457,7 @@ module Origami
       field   :FormType,      :Type => Integer, :Default => 1
       field   :BBox,          :Type => Array, :Required => true
       field   :Matrix,        :Type => Array, :Default => [1, 0, 0, 1, 0, 0]
-      field   :Resources,     :Type => Dictionary, :Version => "1.2"
+      field   :Resources,     :Type => Resources, :Version => "1.2"
       field   :Group,         :Type => Dictionary, :Version => "1.4"
       field   :Ref,           :Type => Dictionary, :Version => "1.4"
       field   :Metadata,      :Type => Stream, :Version => "1.4"

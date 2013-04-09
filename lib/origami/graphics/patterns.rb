@@ -60,7 +60,7 @@ module Origami
         field   :BBox,                  :Type => Array, :Required => true
         field   :XStep,                 :Type => Number, :Required => true
         field   :YStep,                 :Type => Number, :Required => true
-        field   :Resources,             :Type => Dictionary, :Required => true
+        field   :Resources,             :Type => Resources, :Required => true
         field   :Matrix,                :Type => Array, :Default => [ 1, 0, 0, 1, 0, 0 ]
       
       end

@@ -426,7 +426,7 @@ module Origami
     field   :Type,                  :Type => Name, :Default => :Page, :Required => true
     field   :Parent,                :Type => Dictionary, :Required => true
     field   :LastModified,          :Type => String, :Version => "1.3"
-    field   :Resources,             :Type => Dictionary, :Required => true 
+    field   :Resources,             :Type => Resources, :Required => true 
     field   :MediaBox,              :Type => Array, :Default => Format::A4, :Required => true
     field   :CropBox,               :Type => Array
     field   :BleedBox,              :Type => Array, :Version => "1.3"

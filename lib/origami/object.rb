@@ -102,7 +102,7 @@ module Origami
   #
   module StandardObject #:nodoc:
 
-    DEFAULT_ATTRIBUTES = { :Type => Object, :Version => "1.1" } #:nodoc:
+    DEFAULT_ATTRIBUTES = { :Type => Object, :Version => "1.2" } #:nodoc:
 
     def self.included(receiver) #:nodoc:
       receiver.instance_variable_set(:@fields, Hash.new(DEFAULT_ATTRIBUTES))
@@ -155,6 +155,12 @@ module Origami
         fields
       end
 
+      def hint_type(name)
+        if @fields.has_key?(name)
+          hint = @fields[name][:Type] 
+          hint unless hint.is_a?(::Array)
+        end
+      end
     end
 
     def pre_build #:nodoc:
@@ -163,7 +169,7 @@ module Origami
       do_type_check if Origami::OPTIONS[:enable_type_checking] == true
       
       super
-    end
+     end
     
     #
     # Check if an attribute is set in the current Object.
@@ -610,6 +616,14 @@ module Origami
     #
     def native_type
       self.class.native_type
+    end
+
+    def cast_to(type) #:nodoc:
+      if type.native_type != self.native_type
+        raise TypeError, "Incompatible cast from #{self.class} to #{type}"
+      end
+
+      self
     end
     
     #

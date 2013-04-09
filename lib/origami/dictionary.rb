@@ -92,16 +92,26 @@ module Origami
           if type.nil?
             raise InvalidDictionaryObjectError, "Invalid object for field #{key.to_s}"
           end
-          value = type.parse(stream)
           
+          value = type.parse(stream)
           pairs[key] = value
         end
        
         dict = 
           if Origami::OPTIONS[:enable_type_guessing]
-            self.guess_type(pairs).new(pairs)
+            guessed_type = self.guess_type(pairs)
+            guessed_type.new(
+              Hash[
+                pairs.map {|key, value|
+                  hint_type = guessed_type.hint_type(key.value)
+                  if hint_type and hint_type.native_type == value.native_type
+                    [key, value.cast_to(hint_type)]
+                  else
+                    [key, value]
+                  end
+                }])
           else
-            Dictionary.new(pairs)
+            self.new(pairs)
           end
 
         dict.file_offset = offset
@@ -171,8 +181,26 @@ module Origami
         super(key.to_o)
       end
 
-      alias each each_value
+      def cast_to(type)
+        super(type)
 
+        cast = type.new(self)
+        cast.parent = self.parent
+        cast.no, cast.generation = self.no, self.generation
+        if self.is_indirect?
+          cast.set_indirect(true) 
+          cast.set_pdf(self.pdf) 
+          cast.file_offset = self.file_offset # cast can replace self
+        end
+
+        cast.xref_cache.update(self.xref_cache)
+        cast.names_cache.concat(self.names_cache)
+        cast.strings_cache.concat(self.strings_cache)
+
+        cast
+      end
+
+      alias each each_value
 
       alias value to_h
 
@@ -213,7 +241,7 @@ module Origami
       end
 
       def self.guess_type(hash) #:nodoc:
-        best_type = Dictionary
+        best_type = self
 
         @@cast_fingerprints.each_pair do |typeclass, keys|
           best_type = typeclass if keys.all? { |k,v| 
@@ -223,6 +251,8 @@ module Origami
 
         best_type
       end
+
+      def self.hint_type(name); nil end #:nodoc:
 
     end #class
  
