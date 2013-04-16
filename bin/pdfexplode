@@ -7,7 +7,6 @@
 
 = Info:
   Explodes a PDF into separate documents.
-
 = License:
 	Origami is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as published by
@@ -38,7 +37,7 @@ require 'rexml/document'
 
 class OptParser
   BANNER = <<USAGE
-Usage: #{$0} <PDF-file> [-r <range>] [-t pages] [-d <output-directory>]
+Usage: #{$0} <PDF-file> [-r <range>] [-t pages|rsrc] [-d <output-directory>]
 Explodes a document into separate documents.
 Bug reports or feature requests at: http://origami-pdf.googlecode.com/
 
@@ -57,7 +56,7 @@ USAGE
         range =
           if r.index('-').nil?
             page = r.to_i
-            (page..page)
+            Range.new(page-1, page-1)
           else
             from, to = r.split('-').map{|bound| bound.to_i}
             from ||= 1
@@ -67,7 +66,7 @@ USAGE
         options[:page_range] = range
       end
 
-      opts.on("-t", "--type TYPE", "Split type. Must be 'pages'.") do |t|
+      opts.on("-t", "--type TYPE", "Split by type. Can be 'pages' or 'rsrc'. Default to 'pages'.") do |t|
         options[:split_by] = t
       end
 
@@ -105,8 +104,80 @@ begin
     @options[:output_dir] = "#{File.join(File.dirname(target), File.basename(target,'.pdf'))}.explode"
   end
 
+  Origami::OPTIONS[:ignore_bad_references] = true
   OUTPUT_DIR = @options[:output_dir]
   Dir::mkdir(OUTPUT_DIR) unless File.directory?(OUTPUT_DIR)
+
+  def split_by_rsrc(n, page, type)
+    all_rsrc = page.resources
+    type_rsrc = page.ls_resources(type)
+    other_rsrc = all_rsrc.keys - type_rsrc.keys
+
+    unless type_rsrc.empty?
+      # Keep only specified resource type.
+      output_file = File.join(OUTPUT_DIR, "page_#{n}_keeponly_#{type}.pdf")
+      PDF.write(output_file) do |pdf|
+        reduced = page.copy
+        # New resource dictionary with only matching resources.
+        reduced.Resources = Resources.new(type => type_rsrc)
+        # Remove mention of other resources.
+        reduced.Contents.data = reduced.Contents.data.lines.to_a.
+          delete_if {|line| other_rsrc.any?{|rsrc| line =~ /#{rsrc}/}}.join
+
+        STDERR.puts "Creating #{output_file}..."
+        pdf.append_page(reduced)
+      end
+
+      # Remove all specified resource type.
+      output_file = File.join(OUTPUT_DIR, "page_#{n}_excluded_#{type}.pdf") 
+      PDF.write(output_file) do |pdf|
+        reduced = page.copy
+        # New resource dictionary with no resource of specified type.
+        reduced.Resources = reduced.Resources.copy 
+        reduced.Resources.delete(type)
+        # Remove mention this resource type.
+        reduced.Contents.data = reduced.Contents.data.lines.to_a.
+          delete_if {|line| type_rsrc.keys.any?{|rsrc| line =~ /#{rsrc}/}}.join
+
+        STDERR.puts "Creating #{output_file}..."
+        pdf.append_page(reduced)
+      end
+
+      # Now treating each resource object separately.
+      type_rsrc.each_pair do |name, rsrc|
+        anyother_rsrc = all_rsrc.keys - [ name ]
+        # Keey only specified resource object.
+        output_file = File.join(OUTPUT_DIR, "page_#{n}_keeponly_#{type}_#{name}.pdf")
+        PDF.write(output_file) do |pdf|
+          reduced = page.copy
+          # New resource dictionary with only specified resource object.
+          reduced.Resources = Resources.new(type => {name => rsrc})
+          # Remove mention of all other resources.
+          reduced.Contents.data = reduced.Contents.data.lines.to_a.
+            delete_if {|line| anyother_rsrc.any?{|rsrc| line =~ /#{rsrc}/}}.join
+
+          STDERR.puts "Creating #{output_file}..."
+          pdf.append_page(reduced)
+        end
+        
+        # Remove only specified resource object.
+        output_file = File.join(OUTPUT_DIR, "page_#{n}_excluded_#{type}_#{name}.pdf")
+        PDF.write(output_file) do |pdf|
+          reduced = page.copy
+          # New resource dictionary with only specified resource object.
+          reduced.Resources = reduced.Resources.copy
+          reduced.Resources[type] = reduced.Resources.send(type).copy
+          reduced.Resources[type].delete(name)
+          # Remove mention of this resource only.
+          reduced.Contents.data = reduced.Contents.data.lines.to_a.
+            delete_if {|line| line =~ /#{name}/}.join
+
+          STDERR.puts "Creating #{output_file}..."
+          pdf.append_page(reduced)
+        end
+      end
+    end
+  end
 
   params = 
   {
@@ -118,9 +189,21 @@ begin
   pdf.pages[@options[:page_range]].each do |page|
     case @options[:split_by]
       when 'pages'
-        PDF.write(File.join(OUTPUT_DIR, "page_#{i}.pdf")) do |pdf|
+        output_file = File.join(OUTPUT_DIR, "page_#{i}.pdf")
+        PDF.write(output_file) do |pdf|
+          STDERR.puts "Creating #{output_file}..."
           pdf.append_page(page)
         end
+
+      when 'rsrc'
+        [ Resources::EXTGSTATE,
+          Resources::COLORSPACE,
+          Resources::PATTERN,
+          Resources::SHADING,
+          Resources::XOBJECT,
+          Resources::FONT,
+          Resources::PROPERTIES
+        ].each { |type| split_by_rsrc(i, page, type) }
 
       else
         raise ArgumentError, "Unknown split option: #{@options[:split_by]}"
