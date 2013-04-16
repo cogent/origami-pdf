@@ -120,6 +120,9 @@ begin
     @options[:output_dir] = "#{File.basename(target, '.pdf')}.dump"
   end
 
+  # Force data extraction, even for invalid FlateDecode streams.
+  Origami::OPTIONS[:ignore_zlib_errors] = true
+
   OUTPUT_DIR = @options[:output_dir]
   Dir::mkdir(OUTPUT_DIR) unless File.directory?(OUTPUT_DIR)
 

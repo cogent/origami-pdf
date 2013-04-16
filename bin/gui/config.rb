@@ -96,10 +96,8 @@ module PDFWalker
       end
       
       def set_verbosity(level)
-        
         @conf["Debug"]['Verbosity'] = level
         save
-        
       end
       
       def verbosity
@@ -113,11 +111,9 @@ module PDFWalker
       private
       
       def set_missing_values
-        
         @conf ||= {}
         
         DEFAULT_CONFIG.each_key do |cat|
-          
           @conf[cat] = {} unless @conf.include?(cat)
           
           DEFAULT_CONFIG[cat].each_pair do |key, value|

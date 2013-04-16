@@ -261,9 +261,13 @@ module Origami
     # Returns whether the document contains a digital signature.
     #
     def is_signed?
-      not self.Catalog.AcroForm.nil? and 
-      self.Catalog.AcroForm.has_key?(:SigFlags) and 
-      (self.Catalog.AcroForm.SigFlags & InteractiveForm::SigFlags::SIGNATURESEXIST != 0)
+      begin
+        self.Catalog.AcroForm.is_a?(Dictionary) and 
+        self.Catalog.AcroForm.has_key?(:SigFlags) and 
+        (self.Catalog.AcroForm.SigFlags & InteractiveForm::SigFlags::SIGNATURESEXIST != 0)
+      rescue InvalidReferenceError
+        false
+      end
     end
     
     #
@@ -309,7 +313,7 @@ module Origami
       
       sigref.TransformParams = UsageRights::TransformParams.new
       sigref.TransformParams.P = true #:nodoc:
-      sigref.TransformParams.Type = :TransformParams #:nodoc:
+      igref.TransformParams.Type = :TransformParams #:nodoc:
       sigref.TransformParams.V = UsageRights::TransformParams::VERSION
       
       rights.each do |right|
