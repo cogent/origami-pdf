@@ -155,6 +155,7 @@ module Origami
         yield(pdf) if block_given?
         pdf.save(output, options)
       end
+      alias write create
       
       #
       # Deserializes a PDF dump.
@@ -259,7 +260,7 @@ module Origami
       
       self
     end
-    alias saveas save
+    alias write save
     
     #
     # Saves the file up to given revision number.

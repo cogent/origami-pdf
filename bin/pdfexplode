@@ -1,0 +1,137 @@
+#!/usr/bin/env ruby 
+
+=begin
+
+= Author: 
+  Guillaume Delugré <guillaume/at/security-labs.org>
+
+= Info:
+  Explodes a PDF into separate documents.
+
+= License:
+	Origami is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  Origami is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public License
+  along with Origami.  If not, see <http://www.gnu.org/licenses/>.
+
+=end
+
+begin
+  require 'origami'
+rescue LoadError
+  ORIGAMIDIR = "#{File.dirname(__FILE__)}/../lib"
+  $: << ORIGAMIDIR
+  require 'origami'
+end
+include Origami
+
+require 'optparse'
+require 'rexml/document'
+
+class OptParser
+  BANNER = <<USAGE
+Usage: #{$0} <PDF-file> [-r <range>] [-t pages] [-d <output-directory>]
+Explodes a document into separate documents.
+Bug reports or feature requests at: http://origami-pdf.googlecode.com/
+
+Options:
+USAGE
+
+  def self.parser(options)
+    OptionParser.new do |opts|
+      opts.banner = BANNER
+
+      opts.on("-d", "--output-dir DIR", "Output directory.") do |d|
+        options[:output_dir] = d
+      end
+
+      opts.on("-r", "--range PAGES", "Page range (e.g: 2-, 1-3, 5). Default to '-'.") do |r|
+        range =
+          if r.index('-').nil?
+            page = r.to_i
+            (page..page)
+          else
+            from, to = r.split('-').map{|bound| bound.to_i}
+            from ||= 1
+            to ||= 0
+            Range.new(from-1, to-1)
+          end
+        options[:page_range] = range
+      end
+
+      opts.on("-t", "--type TYPE", "Split type. Must be 'pages'.") do |t|
+        options[:split_by] = t
+      end
+
+      opts.on_tail("-h", "--help", "Show this message.") do
+        puts opts
+        exit
+      end
+    end
+  end
+
+  def self.parse(args)
+    options = 
+    {
+      :page_range => (0..-1),
+      :split_by => 'pages'
+    }
+
+    self.parser(options).parse!(args)
+
+    options
+  end
+end
+
+begin
+  @options = OptParser.parse(ARGV)
+
+  if ARGV.empty?
+    STDERR.puts "Error: No filename was specified. #{$0} --help for details."
+    exit 1
+  else
+    target = ARGV.shift
+  end
+
+  if @options[:output_dir].nil?
+    @options[:output_dir] = "#{File.join(File.dirname(target), File.basename(target,'.pdf'))}.explode"
+  end
+
+  OUTPUT_DIR = @options[:output_dir]
+  Dir::mkdir(OUTPUT_DIR) unless File.directory?(OUTPUT_DIR)
+
+  params = 
+  {
+    :verbosity => Parser::VERBOSE_QUIET,
+  }
+  pdf = PDF.read(target, params)
+
+  i = @options[:page_range].first + 1
+  pdf.pages[@options[:page_range]].each do |page|
+    case @options[:split_by]
+      when 'pages'
+        PDF.write(File.join(OUTPUT_DIR, "page_#{i}.pdf")) do |pdf|
+          pdf.append_page(page)
+        end
+
+      else
+        raise ArgumentError, "Unknown split option: #{@options[:split_by]}"
+    end
+
+    i += 1
+  end 
+
+rescue SystemExit
+rescue Exception => e
+  STDERR.puts "#{e.class}: #{e.message} #{e.backtrace}"
+  exit 1
+end
+

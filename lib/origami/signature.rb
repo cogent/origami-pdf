@@ -313,7 +313,7 @@ module Origami
       
       sigref.TransformParams = UsageRights::TransformParams.new
       sigref.TransformParams.P = true #:nodoc:
-      igref.TransformParams.Type = :TransformParams #:nodoc:
+      sigref.TransformParams.Type = :TransformParams #:nodoc:
       sigref.TransformParams.V = UsageRights::TransformParams::VERSION
       
       rights.each do |right|
