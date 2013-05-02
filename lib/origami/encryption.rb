@@ -1134,9 +1134,9 @@ module Origami
             oks = self.O[40, 8]
 
             if self.R == 5
-              okey = Digest::SHA256.digest(passwd + oks)
+              okey = Digest::SHA256.digest(passwd + oks + self.U)
             else
-              okey = compute_hardened_hash(passwd, oks)
+              okey = compute_hardened_hash(passwd, oks, self.U)
             end
 
             iv = ::Array.new(AES::BLOCKSIZE, 0).pack("C*")
@@ -1167,23 +1167,19 @@ module Origami
             iv = ::Array.new(AES::BLOCKSIZE, 0).pack("C*")
             
             if self.R == 5
+              self.U = Digest::SHA256.digest(upass + uvs) + uvs + uks
+              self.O = Digest::SHA256.digest(opass + ovs + self.U) + ovs + oks
               ukey = Digest::SHA256.digest(upass + uks)
-              okey = Digest::SHA256.digest(opass + oks)
+              okey = Digest::SHA256.digest(opass + oks + self.U)
             else
+              self.U = compute_hardened_hash(upass, uvs) + uvs + uks
+              self.O = compute_hardened_hash(opass, ovs, self.U) + ovs + oks
               ukey = compute_hardened_hash(upass, uks)
-              okey = compute_hardened_hash(upass, oks)
+              okey = compute_hardened_hash(opass, oks, self.U)
             end
 
             self.UE = AES.new(ukey, iv, false).encrypt(file_key)[iv.size, 32]
             self.OE = AES.new(okey, iv, false).encrypt(file_key)[iv.size, 32]
-              
-            if self.R == 5
-              self.U = Digest::SHA256.digest(upass + uvs) + uvs + uks
-              self.O = Digest::SHA256.digest(opass + ovs + self.U) + ovs + oks
-            else
-              self.U = compute_hardened_hash(upass, uvs) + uvs + uks
-              self.O = compute_hardened_hash(opass, ovs, self.U) + ovs + oks
-            end
 
             ones = "\xff" * 4
             ones.force_encoding("binary") if RUBY_VERSION > '1.8'
