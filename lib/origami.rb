@@ -30,6 +30,24 @@ if RUBY_VERSION < '1.9'
   end
 end
 
+module Origami
+  VERSION   = "1.2.6"
+  REVISION  = "$Revision$" #:nodoc:
+  
+  #
+  # Global 
+  # options for Origami.
+  #
+  OPTIONS   = 
+  {
+    :enable_type_checking => true,      # set to false to disable type consistency checks during compilation.
+    :enable_type_guessing => true,      # set to false to prevent the parser to guess the type of special dictionary and streams (not recommended).
+    :use_openssl => true,               # set to false to use Origami crypto backend.
+    :ignore_bad_references => false,    # set to interpret invalid references as Null objects, instead of raising an exception.
+    :ignore_zlib_errors => false,       # set to true to ignore exceptions on invalid Flate streams.
+  }
+end
+
 require 'origami/pdf'
 require 'origami/extensions/fdf'
 require 'origami/extensions/ppklite'

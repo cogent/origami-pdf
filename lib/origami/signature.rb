@@ -23,7 +23,12 @@
 
 =end
 
-require 'openssl'
+begin
+  require 'openssl' if Origami::OPTIONS[:use_openssl]
+rescue LoadError
+  Origami::OPTIONS[:use_openssl] = false
+end 
+
 require 'digest/sha1'
 
 module Origami
@@ -40,6 +45,11 @@ module Origami
     #   If no argument is passed, embedded certificates are treated as trusted.
     #
     def verify(options = {})
+
+      unless Origami::OPTIONS[:use_openssl]
+        fail "OpenSSL is not present or has been disabled."
+      end
+
       params =
       {
         :trusted => []
@@ -276,14 +286,14 @@ module Origami
     #
     def enable_usage_rights(cert, pkey, *rights)
       
+      unless Origami::OPTIONS[:use_openssl]
+        fail "OpenSSL is not present or has been disabled."
+      end
+      
       signfield_size = lambda{|crt, key, ca|
         datatest = "abcdefghijklmnopqrstuvwxyz"
         OpenSSL::PKCS7.sign(crt, key, datatest, ca, OpenSSL::PKCS7::DETACHED | OpenSSL::PKCS7::BINARY).to_der.size + 128
       }
-      
-      unless Origami::OPTIONS[:use_openssl]
-        fail "OpenSSL is not present or has been disabled."
-      end
       
       #
       # Load key pair

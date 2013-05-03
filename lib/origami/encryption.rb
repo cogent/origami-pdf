@@ -23,6 +23,12 @@
 
 =end
 
+begin
+  require 'openssl' if Origami::OPTIONS[:use_openssl]
+rescue LoadError
+  Origami::OPTIONS[:use_openssl] = false
+end
+
 require 'digest/md5'
 require 'digest/sha2'
 
@@ -291,6 +297,26 @@ module Origami
   #
   module Encryption
 
+    #
+    # Generates _n_ random bytes from a fast PRNG.
+    #
+    def self.rand_bytes(n)
+      ::Array.new(n) { rand(256) }.pack("C*")
+    end
+
+    #
+    # Generates _n_ random bytes from a crypto PRNG.
+    #
+    def self.strong_rand_bytes(n)
+      if Origami::OPTIONS[:use_openssl]
+        OpenSSL::Random.random_bytes(n)
+      elsif RUBY_VERSION >= '1.9'
+        Random.new.bytes(n)
+      else
+        self.rand_bytes(n)
+      end
+    end
+
     module EncryptedDocument
 
       attr_writer :encryption_key
@@ -440,7 +466,7 @@ module Origami
           if @algorithm == ARC4 or @algorithm == Identity
             @algorithm.encrypt(key, self.value)
           else
-            iv = ::Array.new(AES::BLOCKSIZE) { rand(256) }.pack('C*')
+            iv = Encryption.rand_bytes(AES::BLOCKSIZE)
             @algorithm.encrypt(key, iv, self.value)
           end
 
@@ -480,7 +506,7 @@ module Origami
             if @algorithm == ARC4 or @algorithm == Identity
               @algorithm.encrypt(key, self.rawdata)
             else
-              iv = ::Array.new(AES::BLOCKSIZE) { rand(256) }.pack('C*')
+              iv = Encryption.rand_bytes(AES::BLOCKSIZE)
               @algorithm.encrypt(key, iv, @rawdata)
             end
 
@@ -1162,8 +1188,8 @@ module Origami
             upass = password_to_utf8(userpassword)
             opass = password_to_utf8(ownerpassword)
 
-            uvs, uks, ovs, oks = ::Array.new(4) { ::Array.new(8) { rand(255) }.pack("C*") }
-            file_key = ::Array.new(32) { rand(256) }.pack("C*")
+            uvs, uks, ovs, oks = ::Array.new(4) { Encryption.rand_bytes(8) }
+            file_key = Encryption.strong_rand_bytes(32)
             iv = ::Array.new(AES::BLOCKSIZE, 0).pack("C*")
             
             if self.R == 5

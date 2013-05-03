@@ -314,43 +314,12 @@ module Origami
           raise CCITTFaxFilterError, "Data size is not a multiple of image width"
         end
 
-        white, black = (@params.BlackIs1 == true) ? [0,1] : [1,0]
-
+        colors = (@params.BlackIs1 == true) ? [0,1] : [1,0]
         bitr = Utils::BitReader.new(stream)
         bitw = Utils::BitWriter.new
 
         until bitr.eod?
-          
-          bitw.write(*EOL)
-          scan_len = 0
-          current_color = white
-
-          # Process each bit in line.
-          begin
-            if bitr.read(1) == current_color
-              scan_len += 1
-            else
-              if current_color == white
-                put_white_bits(bitw, scan_len)
-              else
-                put_black_bits(bitw, scan_len)
-              end
-
-              current_color ^= 1
-              scan_len = 1
-            end
-          end while bitr.pos % columns != 0
-
-          if current_color == white
-            put_white_bits(bitw, scan_len)
-          else
-            put_black_bits(bitw, scan_len)
-          end
-
-          # Align encoded lign on a 8-bit boundary.
-          if @params.EncodedByteAlign == true and bitw.pos % 8 != 0
-            bitw.write(0, 8 - (bitw.pos % 8))
-          end
+          encode_one_dimensional_line(bitr, bitw, columns, colors)  
         end
 
         # Emit return-to-control code
@@ -372,12 +341,15 @@ module Origami
           raise CCITTFaxFilterError, "Invalid value for parameter `Columns'"
         end
 
-        white, black = (@params.BlackIs1 == true) ? [0,1] : [1,0]
-        aligned = @params.EncodedByteAlign == true
-        has_eob = @params.EndOfBlock.nil? or @params.EndOfBlock == true
-        has_eol = @params.EndOfLine == true
+        colors = (@params.BlackIs1 == true) ? [0,1] : [1,0]
+        params = 
+        {
+          :is_aligned? => (@params.EncodedByteAlign == true),
+          :has_eob? => (@params.EndOfBlock.nil? or @params.EndOfBlock == true),
+          :has_eol? => (@params.EndOfLine == true)
+        }
 
-        unless has_eob
+        unless params[:has_eob?]
           unless @params.has_key?(:Rows) and @params.Rows.is_a?(::Integer) and @params.Rows.value > 0
             raise CCITTFaxFilterError, "Invalid value for parameter `Rows'"
           end
@@ -389,15 +361,13 @@ module Origami
         bitw = Utils::BitWriter.new
 
         until bitr.eod? or rows == 0
-          current_color = white
-          
           # realign the read line on a 8-bit boundary if required
-          if aligned and bitr.pos % 8 != 0
+          if params[:is_aligned?] and bitr.pos % 8 != 0
             bitr.pos += 8 - (bitr.pos % 8)          
           end
 
           # received return-to-control code 
-          if has_eob and bitr.peek(RTC[1]) == RTC[0]
+          if params[:has_eob?] and bitr.peek(RTC[1]) == RTC[0]
             bitr.pos += RTC[1]
             break
           end
@@ -407,41 +377,81 @@ module Origami
             raise InvalidCCITTFaxDataError.new(
               "No end-of-line pattern found (at bit pos #{bitr.pos}/#{bitr.size}})",
               bitw.final.to_s
-            )if has_eol
+            ) if params[:has_eol?]
           else
             bitr.pos += EOL[1]
           end
 
-          line_length = 0
-          while line_length < columns
-            if current_color == white
-              bit_length = get_white_bits(bitr)
-            else
-              bit_length = get_black_bits(bitr)
-            end
-
-            raise InvalidCCITTFaxDataError.new(
-              "Unfinished line (at bit pos #{bitr.pos}/#{bitr.size}})",
-              bitw.final.to_s
-            ) if bit_length.nil?
-            
-            line_length += bit_length
-            raise InvalidCCITTFaxDataError.new(
-              "Line is too long (at bit pos #{bitr.pos}/#{bitr.size}})",
-              bitw.final.to_s
-            ) if line_length > columns
-
-            write_bit_range(bitw, current_color, bit_length)
-            current_color ^= 1
-          end
-
-          rows -= 1 unless has_eob
+          decode_one_dimensional_line(bitr, bitw, columns, colors)
+          rows -= 1 unless params[:has_eob?]
         end
 
         bitw.final.to_s
       end
 
       private
+
+      def encode_one_dimensional_line(input, output, columns, colors) #:nodoc:
+        output.write(*EOL)
+        scan_len = 0
+        white, black = colors
+        current_color = white
+
+        # Process each bit in line.
+        begin
+          if input.read(1) == current_color
+            scan_len += 1
+          else
+            if current_color == white
+              put_white_bits(output, scan_len)
+            else
+              put_black_bits(output, scan_len)
+            end
+
+            current_color ^= 1
+            scan_len = 1
+          end
+        end while input.pos % columns != 0
+
+        if current_color == white
+          put_white_bits(output, scan_len)
+        else
+          put_black_bits(output, scan_len)
+        end
+
+        # Align encoded lign on a 8-bit boundary.
+        if @params.EncodedByteAlign == true and output.pos % 8 != 0
+          output.write(0, 8 - (output.pos % 8))
+        end
+      end
+
+      def decode_one_dimensional_line(input, output, columns, colors) #:nodoc:
+        white, black = colors
+        current_color = white
+        
+        line_length = 0
+        while line_length < columns
+          if current_color == white
+            bit_length = get_white_bits(input)
+          else
+            bit_length = get_black_bits(input)
+          end
+
+          raise InvalidCCITTFaxDataError.new(
+            "Unfinished line (at bit pos #{input.pos}/#{input.size}})",
+            output.final.to_s
+          ) if bit_length.nil?
+          
+          line_length += bit_length
+          raise InvalidCCITTFaxDataError.new(
+            "Line is too long (at bit pos #{input.pos}/#{input.size}})",
+            output.final.to_s
+          ) if line_length > columns
+
+          write_bit_range(output, current_color, bit_length)
+          current_color ^= 1
+        end
+      end
 
       def get_white_bits(bitr) #:nodoc:
         get_color_bits(bitr, WHITE_CONFIGURATION_DECODE_TABLE, WHITE_TERMINAL_DECODE_TABLE)

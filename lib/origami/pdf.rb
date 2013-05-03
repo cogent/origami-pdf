@@ -65,29 +65,6 @@ require 'origami/parsers/pdf'
 
 module Origami
 
-  VERSION   = "1.2.5"
-  REVISION  = "$Revision$" #:nodoc:
-  
-  #
-  # Global 
-  # options for Origami.
-  #
-  OPTIONS   = 
-  {
-    :enable_type_checking => true,      # set to false to disable type consistency checks during compilation.
-    :enable_type_guessing => true,      # set to false to prevent the parser to guess the type of special dictionary and streams (not recommended).
-    :use_openssl => true,               # set to false to use Origami crypto backend.
-    :ignore_bad_references => false,    # set to interpret invalid references as Null objects, instead of raising an exception.
-    :ignore_zlib_errors => false,       # set to true to ignore exceptions on invalid Flate streams.
-  }
-  
-  begin
-    require 'openssl'
-    OPTIONS[:use_openssl] = true
-  rescue LoadError
-    OPTIONS[:use_openssl] = false
-  end
-
   class InvalidPDFError < Exception #:nodoc:
   end
 	

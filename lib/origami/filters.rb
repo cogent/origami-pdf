@@ -71,7 +71,7 @@ module Origami
           while length > 0
             if length >= 8 - @ptr_bit
               length -= 8 - @ptr_bit
-              @last_byte = 0 unless @last_byte
+              @last_byte ||= 0 
               @last_byte |= (data >> length) & ((1 << (8 - @ptr_bit)) - 1)
 
               data &= (1 << length) - 1
@@ -79,7 +79,7 @@ module Origami
               @last_byte = nil
               @ptr_bit = 0
             else
-              @last_byte = 0 unless @last_byte
+              @last_byte ||= 0 
               @last_byte |= (data & ((1 << length) - 1)) << (8 - @ptr_bit - length)
               @ptr_bit += length
               
