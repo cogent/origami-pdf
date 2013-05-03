@@ -130,6 +130,11 @@ module Origami
       # Internally used by some filters.
       #
       class BitReader
+        BRUIJIN_TABLE = ::Array.new(32)
+        BRUIJIN_TABLE.size.times { |i| 
+          BRUIJIN_TABLE[((0x77cb531 * (1 << i)) >> 27) & 31] = i 
+        }
+
         def initialize(data)
           @data = data
           reset
@@ -215,6 +220,83 @@ module Origami
           n
         end
 
+        #
+        # Used for bit scanning.
+        # Counts leading zeros. Does not advance read pointer.
+        #
+        def clz
+          count = 0
+          if @ptr_bit != 0
+            bits = peek(8 - @ptr_bit) 
+            count = clz32(bits << (32 - (8 - @ptr_bit)))
+
+            return count if count < (8 - @ptr_bit)
+          end
+
+          delta = 0
+          while @data.size > @ptr_byte + delta * 4
+            word = @data[@ptr_byte + delta * 4, 4] # next 32 bits
+            z = clz32((word << (4 - word.size)).unpack("N")[0])
+            
+            count += z
+            delta += 1
+
+            return count if z < 32 - ((4 - word.size) << 3)
+          end
+
+          count
+        end
+
+        #
+        # Used for bit scanning.
+        # Count leading ones. Does not advance read pointer.
+        #
+        def clo
+          count = 0
+          if @ptr_bit != 0
+            bits = peek(8 - @ptr_bit) 
+            count = clz32(~(bits << (32 - (8 - @ptr_bit))) & 0xff)
+
+            return count if count < (8 - @ptr_bit)
+          end
+
+          delta = 0
+          while @data.size > @ptr_byte + delta * 4
+            word = @data[@ptr_byte + delta * 4, 4] # next 32 bits
+            z = clz32(~((word << (4 - word.size)).unpack("N")[0]) & 0xffff_ffff)
+            
+            count += z
+            delta += 1
+
+            return count if z < 32 - ((4 - word.size) << 3)
+          end
+
+          count
+        end
+
+        private
+
+        def bitswap8(i) #:nodoc
+          ((i * 0x0202020202) & 0x010884422010) % 1023
+        end
+
+        def bitswap32(i) #:nodoc:
+          (bitswap8((i >> 0) & 0xff) << 24) |
+          (bitswap8((i >> 8) & 0xff) << 16) |
+          (bitswap8((i >> 16) & 0xff) << 8) |
+          (bitswap8((i >> 24) & 0xff) << 0) 
+        end
+
+        def ctz32(i) #:nodoc:
+          if i == 0 then 32
+          else
+            BRUIJIN_TABLE[(((i & -i) * 0x77cb531) >> 27) & 31]
+          end
+        end
+
+        def clz32(i) #:nodoc:
+          ctz32 bitswap32 i
+        end
       end
     end
 

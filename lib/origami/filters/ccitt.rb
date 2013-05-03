@@ -300,13 +300,13 @@ module Origami
       # Encodes data using CCITT-facsimile compression method.
       #
       def encode(stream)
-      
-        if @params.has_key?(:K) and @params.K != 0
+        mode = @params.K.value 
+        unless mode.is_a?(::Integer) and mode <= 0
           raise NotImplementedError, "CCITT encoding scheme not supported"
         end
 
         columns = @params.has_key?(:Columns) ? @params.Columns.value : (stream.size << 3)
-        unless columns.is_a?(::Integer) and columns > 0 and columns % 8 == 0
+        unless columns.is_a?(::Integer) and columns > 0 #and columns % 8 == 0
           raise CCITTFaxFilterError, "Invalid value for parameter `Columns'"
         end
 
@@ -315,11 +315,24 @@ module Origami
         end
 
         colors = (@params.BlackIs1 == true) ? [0,1] : [1,0]
+        white, _black = colors
         bitr = Utils::BitReader.new(stream)
         bitw = Utils::BitWriter.new
 
+        # Group 4 requires an imaginary white line
+        if mode < 0
+          prev_line = Utils::BitWriter.new
+          write_bit_range(prev_line, white, columns)
+          prev_line = Utils::BitReader.new(prev_line.final.to_s)
+        end
+
         until bitr.eod?
-          encode_one_dimensional_line(bitr, bitw, columns, colors)  
+          case
+            when mode == 0
+              encode_one_dimensional_line(bitr, bitw, columns, colors)  
+            when mode < 0
+              encode_two_dimensional_line(bitr, bitw, columns, colors, prev_line)
+          end
         end
 
         # Emit return-to-control code
@@ -332,16 +345,18 @@ module Origami
       # Decodes data using CCITT-facsimile compression method.
       #
       def decode(stream)
-        if @params.has_key?(:K) and @params.K != 0
+        mode = @params.K.value
+        unless mode.is_a?(::Integer) and mode <= 0
           raise NotImplementedError, "CCITT encoding scheme not supported"
         end
 
         columns = @params.has_key?(:Columns) ? @params.Columns.value : 1728
-        unless columns.is_a?(::Integer) and columns > 0 and columns % 8 == 0
+        unless columns.is_a?(::Integer) and columns > 0 #and columns % 8 == 0
           raise CCITTFaxFilterError, "Invalid value for parameter `Columns'"
         end
 
         colors = (@params.BlackIs1 == true) ? [0,1] : [1,0]
+        white, _black = colors
         params = 
         {
           :is_aligned? => (@params.EncodedByteAlign == true),
@@ -359,6 +374,13 @@ module Origami
 
         bitr = Utils::BitReader.new(stream)
         bitw = Utils::BitWriter.new
+
+        # Group 4 requires an imaginary white line
+        if mode < 0
+          prev_line = Utils::BitWriter.new
+          write_bit_range(prev_line, white, columns)
+          prev_line = Utils::BitReader.new(prev_line.final.to_s)
+        end
 
         until bitr.eod? or rows == 0
           # realign the read line on a 8-bit boundary if required
@@ -382,7 +404,14 @@ module Origami
             bitr.pos += EOL[1]
           end
 
-          decode_one_dimensional_line(bitr, bitw, columns, colors)
+          case
+            when mode == 0
+              decode_one_dimensional_line(bitr, bitw, columns, colors)
+            when mode < 0
+              decode_two_dimensional_line(bitr, bitw, columns, colors, prev_line)
+          end 
+
+
           rows -= 1 unless params[:has_eob?]
         end
 
@@ -425,6 +454,13 @@ module Origami
         end
       end
 
+      def encode_two_dimensional_line(input, output, columns, colors, prev_line) #:nodoc:
+        raise NotImplementedError, "CCITT two-dimensional encoding scheme not supported."
+
+        white, black = colors
+        current_color = white
+      end
+
       def decode_one_dimensional_line(input, output, columns, colors) #:nodoc:
         white, black = colors
         current_color = white
@@ -451,6 +487,10 @@ module Origami
           write_bit_range(output, current_color, bit_length)
           current_color ^= 1
         end
+      end
+
+      def decode_two_dimensional_line(input, output, columns, colors, prev_line) #:nodoc:
+        raise NotImplementedError, "CCITT two-dimensional decoding scheme not supported."
       end
 
       def get_white_bits(bitr) #:nodoc:
