@@ -1122,7 +1122,7 @@ module Origami
             padded << fileid
             
             encrypt_metadata = self.EncryptMetadata != false
-            padded << "\xFF\xFF\xFF\xFF" if self.R >= 4 and not encrypt_metadata
+            padded << [ -1 ].pack("i") if self.R >= 4 and not encrypt_metadata
 
             key = Digest::MD5.digest(padded)
 
