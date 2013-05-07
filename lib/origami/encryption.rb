@@ -1067,6 +1067,7 @@ module Origami
     module Standard
     
       PADDING = "\x28\xBF\x4E\x5E\x4E\x75\x8A\x41\x64\x00\x4E\x56\xFF\xFA\x01\x08\x2E\x2E\x00\xB6\xD0\x68\x3E\x80\x2F\x0C\xA9\xFE\x64\x53\x69\x7A" #:nodoc:
+      PADDING.force_encoding('binary') if RUBY_VERSION > '1.8'
     
       #
       # Permission constants for encrypted documents.
@@ -1207,17 +1208,12 @@ module Origami
             self.UE = AES.new(ukey, iv, false).encrypt(file_key)[iv.size, 32]
             self.OE = AES.new(okey, iv, false).encrypt(file_key)[iv.size, 32]
 
-            ones = "\xff" * 4
-            ones.force_encoding("binary") if RUBY_VERSION > '1.8'
-            zeros = "\x00" * 4
-            zeros.force_encoding("binary") if RUBY_VERSION > '1.8'
-
             perms = 
               [ self.P ].pack("V") +                              # 0-3
-              ones +                                              # 4-7
+              [ -1 ].pack("V") +                                  # 4-7
               (self.EncryptMetadata == true ? "T" : "F") +        # 8
               "adb" +                                             # 9-11
-              zeros                                               # 12-15
+              [ 0 ].pack("V")                                     # 12-15
 
             self.Perms = AES.new(file_key, iv, false).encrypt(perms)[iv.size, 16]
 
@@ -1320,9 +1316,7 @@ module Origami
             
             19.times { |i| user_key = ARC4.encrypt(xor(key,i+1), user_key) }
             
-            pad_char = "\xFF"
-            pad_char.force_encoding("binary") if RUBY_VERSION > '1.8'
-            user_key.ljust(32, pad_char)
+            user_key.ljust(32, 0xFF.chr)
           end
         end
 
