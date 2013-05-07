@@ -129,7 +129,7 @@ module Origami
       super(i)
     end
       
-    def self.parse(stream) #:nodoc:
+    def self.parse(stream, parser = nil) #:nodoc:
 
       offset = stream.pos
 
@@ -177,7 +177,7 @@ module Origami
       super(f)
     end
   
-    def self.parse(stream) #:nodoc:
+    def self.parse(stream, parser = nil) #:nodoc:
 
       offset = stream.pos
       

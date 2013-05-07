@@ -76,7 +76,7 @@ module Origami
         end
       end
       
-      def self.parse(stream) #:nodoc:
+      def self.parse(stream, parser = nil) #:nodoc:
         
         offset = stream.pos
 
@@ -86,30 +86,42 @@ module Origami
           
         pairs = {}
         while stream.skip(@@regexp_close).nil? do
-          key = Name.parse(stream)
+          key = Name.parse(stream, parser)
           
           type = Object.typeof(stream)
           if type.nil?
             raise InvalidDictionaryObjectError, "Invalid object for field #{key.to_s}"
           end
           
-          value = type.parse(stream)
+          value = type.parse(stream, parser)
           pairs[key] = value
         end
        
         dict = 
           if Origami::OPTIONS[:enable_type_guessing]
             guessed_type = self.guess_type(pairs)
-            guessed_type.new(
-              Hash[
-                pairs.map {|key, value|
-                  hint_type = guessed_type.hint_type(key.value)
-                  if hint_type and hint_type.native_type == value.native_type
-                    [key, value.cast_to(hint_type)]
-                  else
-                    [key, value]
-                  end
-                }])
+
+            if Origami::OPTIONS[:enable_type_propagation]
+              guessed_type.new(
+                Hash[
+                  pairs.map {|key, value|
+                    hint_type = guessed_type.hint_type(key.value)
+                    if hint_type.is_a?(::Array) and not value.is_a?(Reference) # Choose best match
+                      hint_type.find {|type| type.native_type == value.native_type}
+                    end
+
+                    if hint_type.is_a?(Class) and hint_type.native_type == value.native_type
+                      [key, value.cast_to(hint_type)]
+                    elsif hint_type and value.is_a?(Reference) and parser
+                      parser.defer_type_cast(value, hint_type)
+                      [key, value]
+                    else
+                      [key, value]
+                    end
+                  }])
+            else
+              guessed_type.new(pairs)
+            end
           else
             self.new(pairs)
           end
@@ -121,7 +133,7 @@ module Origami
       
       alias to_h to_hash
       
-      def to_s(indent = 1)  #:nodoc:
+      def to_s(indent = 1) #:nodoc:
         if indent > 0
           content = TOKENS.first + EOL
           self.each_pair do |key,value|

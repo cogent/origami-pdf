@@ -116,9 +116,9 @@ module Origami
       end
     end
     
-    def self.parse(stream) #:nodoc:
+    def self.parse(stream, parser = nil) #:nodoc:
       
-      dictionary = Dictionary.parse(stream)
+      dictionary = Dictionary.parse(stream, parser)
       return dictionary if not stream.skip(@@regexp_open)
 
       length = dictionary[:Length]
@@ -207,6 +207,19 @@ module Origami
       set_decode_params(layer, params)
   
       self
+    end
+
+    def cast_to(type)
+      super(type)
+
+      cast = type.new("", self.dictionary.to_h)
+      cast.rawdata = @rawdata.dup
+      cast.no, cast.generation = self.no, self.generation
+      cast.set_indirect(true) 
+      cast.set_pdf(self.pdf) 
+      cast.file_offset = self.file_offset
+
+      cast
     end
 
     def value #:nodoc:

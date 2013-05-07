@@ -612,6 +612,14 @@ module Origami
     end
 
     alias :[] :get_object
+
+    def cast_object(reference, type) #:nodoc:
+      @revisions.each do |rev|
+        if rev.body.include?(reference) and type < rev.body[reference].class
+          rev.body[reference] = rev.body[reference].cast_to(type)
+        end
+      end
+    end
   
     #
     # Returns a new number/generation for future object.

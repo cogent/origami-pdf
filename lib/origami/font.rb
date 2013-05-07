@@ -26,6 +26,73 @@
 module Origami
 
   #
+  # Embedded font stream.
+  #
+  class FontStream < Stream
+    
+    field   :Subtype,                 :Type => Name
+    field   :Length1,                 :Type => Integer
+    field   :Length2,                 :Type => Integer
+    field   :Length3,                 :Type => Integer
+
+  end
+  
+  #
+  # Class representing a font details in a document.
+  #
+  class FontDescriptor < Dictionary
+    
+    include StandardObject
+    
+    FIXEDPITCH  = 1 << 1
+    SERIF       = 1 << 2
+    SYMBOLIC    = 1 << 3
+    SCRIPT      = 1 << 4
+    NONSYMBOLIC = 1 << 6
+    ITALIC      = 1 << 7
+    ALLCAP      = 1 << 17
+    SMALLCAP    = 1 << 18
+    FORCEBOLD   = 1 << 19
+
+    field   :Type,                    :Type => Name, :Default => :FontDescriptor, :Required => true
+    field   :FontName,                :Type => Name, :Required => true
+    field   :FontFamily,              :Type => ByteString, :Version => "1.5"
+    field   :FontStretch,             :Type => Name, :Default => :Normal, :Version => "1.5"
+    field   :FontWeight,              :Type => Integer, :Default => 400, :Version => "1.5"
+    field   :Flags,                   :Type => Integer, :Required => true
+    field   :FontBBox,                :Type => Array
+    field   :ItalicAngle,             :Type => Number, :Required => true
+    field   :Ascent,                  :Type => Number
+    field   :Descent,                 :Type => Number
+    field   :Leading,                 :Type => Number, :Default => 0
+    field   :CapHeight,               :Type => Number
+    field   :XHeight,                 :Type => Number, :Default => 0
+    field   :StemV,                   :Type => Number
+    field   :StemH,                   :Type => Number, :Default => 0
+    field   :AvgWidth,                :Type => Number, :Default => 0
+    field   :MaxWidth,                :Type => Number, :Default => 0
+    field   :MissingWidth,            :Type => Number, :Default => 0
+    field   :FontFile,                :Type => FontStream
+    field   :FontFile2,               :Type => FontStream, :Version => "1.1"
+    field   :FontFile3,               :Type => FontStream, :Version => "1.2"
+    field   :CharSet,                 :Type => ByteString, :Version => "1.1"
+    
+  end
+  
+  #
+  # Class representing a character encoding in a document.
+  #
+  class Encoding < Dictionary
+    
+    include StandardObject
+
+    field   :Type,                    :Type => Name, :Default => :Encoding
+    field   :BaseEncoding,            :Type => Name
+    field   :Differences,             :Type => Array
+   
+  end
+ 
+  #
   # Class representing a rendering font in a document.
   #
   class Font < Dictionary
@@ -38,8 +105,8 @@ module Origami
     field   :FirstChar,               :Type => Integer
     field   :LastChar,                :Type => Integer
     field   :Widths,                  :Type => Array
-    field   :FontDescriptor,          :Type => Dictionary
-    field   :Encoding,                :Type => [ Name, Dictionary ], :Default => :MacRomanEncoding
+    field   :FontDescriptor,          :Type => FontDescriptor
+    field   :Encoding,                :Type => [ Name, Encoding ], :Default => :MacRomanEncoding
     field   :ToUnicode,               :Type => Stream, :Version => "1.2"
    
     # TODO: Type0 and CID Fonts
@@ -139,71 +206,4 @@ module Origami
 
   end
 
-  #
-  # Embedded font stream.
-  #
-  class FontStream < Stream
-    
-    field   :Subtype,                 :Type => Name
-    field   :Length1,                 :Type => Integer
-    field   :Length2,                 :Type => Integer
-    field   :Length3,                 :Type => Integer
-
-  end
-  
-  #
-  # Class representing a font details in a document.
-  #
-  class FontDescriptor < Dictionary
-    
-    include StandardObject
-    
-    FIXEDPITCH  = 1 << 1
-    SERIF       = 1 << 2
-    SYMBOLIC    = 1 << 3
-    SCRIPT      = 1 << 4
-    NONSYMBOLIC = 1 << 6
-    ITALIC      = 1 << 7
-    ALLCAP      = 1 << 17
-    SMALLCAP    = 1 << 18
-    FORCEBOLD   = 1 << 19
-
-    field   :Type,                    :Type => Name, :Default => :FontDescriptor, :Required => true
-    field   :FontName,                :Type => Name, :Required => true
-    field   :FontFamily,              :Type => ByteString, :Version => "1.5"
-    field   :FontStretch,             :Type => Name, :Default => :Normal, :Version => "1.5"
-    field   :FontWeight,              :Type => Integer, :Default => 400, :Version => "1.5"
-    field   :Flags,                   :Type => Integer, :Required => true
-    field   :FontBBox,                :Type => Array
-    field   :ItalicAngle,             :Type => Number, :Required => true
-    field   :Ascent,                  :Type => Number
-    field   :Descent,                 :Type => Number
-    field   :Leading,                 :Type => Number, :Default => 0
-    field   :CapHeight,               :Type => Number
-    field   :XHeight,                 :Type => Number, :Default => 0
-    field   :StemV,                   :Type => Number
-    field   :StemH,                   :Type => Number, :Default => 0
-    field   :AvgWidth,                :Type => Number, :Default => 0
-    field   :MaxWidth,                :Type => Number, :Default => 0
-    field   :MissingWidth,            :Type => Number, :Default => 0
-    field   :FontFile,                :Type => Stream
-    field   :FontFile2,               :Type => Stream, :Version => "1.1"
-    field   :FontFile3,               :Type => Stream, :Version => "1.2"
-    field   :CharSet,                 :Type => ByteString, :Version => "1.1"
-    
-  end
-  
-  #
-  # Class representing a character encoding in a document.
-  #
-  class Encoding < Dictionary
-    
-    include StandardObject
-
-    field   :Type,                    :Type => Name, :Default => :Encoding
-    field   :BaseEncoding,            :Type => Name
-    field   :Differences,             :Type => Array
-   
-  end
- 
 end

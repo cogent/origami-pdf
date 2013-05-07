@@ -134,6 +134,9 @@ module Origami
     attr_accessor :options
     
     def initialize(options = {}) #:nodoc:
+
+      # Type information for indirect objects.
+      @deferred_casts = {}
       
       #Default options values
       @options = 
@@ -178,7 +181,7 @@ module Origami
       @data.pos = pos
       
       begin
-        obj = Object.parse(@data)
+        obj = Object.parse(@data, self)
         return if obj.nil?
         
         trace "Read #{obj.type} object#{
@@ -237,7 +240,7 @@ module Origami
 
       begin
         info "...Parsing trailer..."
-        trailer = Trailer.parse(@data)
+        trailer = Trailer.parse(@data, self)
 
         @options[:callback].call(trailer)
         trailer
@@ -250,6 +253,10 @@ module Origami
 
         raise
       end
+    end
+
+    def defer_type_cast(reference, type) #:nodoc:
+      @deferred_casts[reference] = type
     end
 
     def target_filename

@@ -78,6 +78,7 @@ module Origami
 
         parse_finalize(pdf)
       end
+
     end
   end
 end

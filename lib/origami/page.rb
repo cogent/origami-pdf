@@ -388,6 +388,9 @@ module Origami
       end
     end
   end
+
+  # Forward declaration.
+  class ContentStream < Stream; end
     
   #
   # Class representing a Page in the PDF document.
@@ -433,7 +436,7 @@ module Origami
     field   :TrimBox,               :Type => Array, :Version => "1.3"
     field   :ArtBox,                :Type => Array, :Version => "1.3"
     field   :BoxColorInfo,          :Type => Dictionary, :Version => "1.4"
-    field   :Contents,              :Type => [ Stream, Array ]
+    field   :Contents,              :Type => [ ContentStream, Array ]
     field   :Rotate,                :Type => Integer, :Default => 0
     field   :Group,                 :Type => Dictionary, :Version => "1.4"
     field   :Thumb,                 :Type => Stream

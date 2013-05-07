@@ -71,6 +71,16 @@ module Origami
       def parse_finalize(pdf) #:nodoc:
         warn "This file has been linearized." if pdf.is_linearized?
 
+        if Origami::OPTIONS[:enable_type_propagation]
+          info "...Propagating types..."
+          @deferred_casts.each_pair do |ref, type|
+            type = [ type ] unless type.is_a?(::Array)
+            type.each do |hint|
+              pdf.cast_object(ref, hint)
+            end
+          end
+        end
+
         #
         # Decrypt encrypted file contents
         #

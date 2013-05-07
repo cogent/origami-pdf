@@ -204,7 +204,7 @@ module Origami
       super(str)
     end
     
-    def self.parse(stream) #:nodoc:
+    def self.parse(stream, parser = nil) #:nodoc:
 
       offset = stream.pos
         
@@ -272,7 +272,7 @@ module Origami
       super(str)
     end
 
-    def self.parse(stream) #:nodoc:
+    def self.parse(stream, parser = nil) #:nodoc:
 
       offset = stream.pos
       
@@ -394,7 +394,7 @@ module Origami
       super(date_str)
     end
     
-    def self.parse(stream) #:nodoc:
+    def self.parse(stream, parser = nil) #:nodoc:
       
       dateReg = Regexp.new(REGEXP_TOKEN)
       

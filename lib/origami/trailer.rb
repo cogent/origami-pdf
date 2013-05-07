@@ -83,6 +83,10 @@ module Origami
   class InvalidTrailerError < Exception #:nodoc:
   end
 
+  # Forward declarations.
+  class Catalog < Dictionary; end
+  class Metadata < Dictionary; end
+
   #
   # Class representing a PDF file Trailer.
   #
@@ -103,9 +107,9 @@ module Origami
 
     field   :Size,      :Type => Integer, :Required => true
     field   :Prev,      :Type => Integer
-    field   :Root,      :Type => Dictionary, :Required => true
+    field   :Root,      :Type => Catalog, :Required => true
     field   :Encrypt,   :Type => Dictionary
-    field   :Info,      :Type => Dictionary
+    field   :Info,      :Type => Metadata
     field   :ID,        :Type => Array
     field   :XRefStm,   :Type => Integer
 
@@ -119,10 +123,10 @@ module Origami
       @startxref, self.dictionary = startxref, dictionary && Dictionary.new(dictionary)
     end
     
-    def self.parse(stream) #:nodoc:
+    def self.parse(stream, parser = nil) #:nodoc:
      
       if stream.skip(@@regexp_open)
-        dictionary = Dictionary.parse(stream)
+        dictionary = Dictionary.parse(stream, parser)
       else 
         dictionary = nil
       end
@@ -152,7 +156,7 @@ module Origami
       dict.parent = self if dict
       @dictionary = dict
     end
-    
+   
     def has_dictionary?
       not @dictionary.nil?
     end

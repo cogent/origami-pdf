@@ -300,7 +300,8 @@ module Origami
       # Encodes data using CCITT-facsimile compression method.
       #
       def encode(stream)
-        mode = @params.K.value 
+        mode = @params.has_key?(:K) ? @params.K.value : 0 
+
         unless mode.is_a?(::Integer) and mode <= 0
           raise NotImplementedError, "CCITT encoding scheme not supported"
         end
@@ -345,7 +346,8 @@ module Origami
       # Decodes data using CCITT-facsimile compression method.
       #
       def decode(stream)
-        mode = @params.K.value
+        mode = @params.has_key?(:K) ? @params.K.value : 0 
+
         unless mode.is_a?(::Integer) and mode <= 0
           raise NotImplementedError, "CCITT encoding scheme not supported"
         end

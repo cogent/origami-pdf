@@ -157,8 +157,7 @@ module Origami
 
       def hint_type(name)
         if @fields.has_key?(name)
-          hint = @fields[name][:Type] 
-          hint unless hint.is_a?(::Array)
+          @fields[name][:Type] 
         end
       end
     end
@@ -545,7 +544,7 @@ module Origami
         nil
       end
         
-      def parse(stream) #:nodoc:
+      def parse(stream, parser = nil) #:nodoc:
         offset = stream.pos
 
         #
@@ -568,7 +567,7 @@ module Origami
         end
           
         begin
-          newObj = type.parse(stream)
+          newObj = type.parse(stream, parser)
         rescue Exception => e
           raise InvalidObjectError, 
             "Failed to parse object (no:#{no},gen:#{gen})\n\t -> [#{e.class}] #{e.message}"

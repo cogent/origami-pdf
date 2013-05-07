@@ -285,51 +285,6 @@ module Origami
   end
 
   #
-  # Class representing the Catalog Dictionary of a PDF file.
-  #
-  class Catalog < Dictionary
-    
-    include StandardObject
-
-    field   :Type,                :Type => Name, :Default => :Catalog, :Required => true
-    field   :Version,             :Type => Name, :Version => "1.4"
-    field   :Pages,               :Type => Dictionary, :Required => true
-    field   :PageLabels,          :Type => Dictionary, :Version => "1.3"
-    field   :Names,               :Type => Dictionary, :Version => "1.2"
-    field   :Dests,               :Type => Dictionary, :Version => "1.1"
-    field   :ViewerPreferences,   :Type => Dictionary, :Version => "1.2"  
-    field   :PageLayout,          :Type => Name, :Default => PageLayout::SINGLE
-    field   :PageMode,            :Type => Name, :Default => PageMode::NONE
-    field   :Outlines,            :Type => Dictionary
-    field   :Threads,             :Type => Array, :Version => "1.1"
-    field   :OpenAction,          :Type => [ Array, Dictionary ], :Version => "1.1"
-    field   :AA,                  :Type => Dictionary, :Version => "1.4"
-    field   :URI,                 :Type => Dictionary, :Version => "1.1"
-    field   :AcroForm,            :Type => Dictionary, :Version => "1.2"
-    field   :Metadata,            :Type => Stream, :Version => "1.4"
-    field   :StructTreeRoot,      :Type => Dictionary, :Version => "1.3"
-    field   :MarkInfo,            :Type => Dictionary, :Version => "1.4"
-    field   :Lang,                :Type => String, :Version => "1.4"
-    field   :SpiderInfo,          :Type => Dictionary, :Version => "1.3"
-    field   :OutputIntents,       :Type => Array, :Version => "1.4"
-    field   :PieceInfo,           :Type => Dictionary, :Version => "1.4"
-    field   :OCProperties,        :Type => Dictionary, :Version => "1.5"
-    field   :Perms,               :Type => Dictionary, :Version => "1.5"
-    field   :Legal,               :Type => Dictionary, :Version => "1.5"
-    field   :Requirements,        :Type => Array, :Version => "1.7"
-    field   :Collection,          :Type => Dictionary, :Version => "1.7"
-    field   :NeedsRendering,      :Type => Boolean, :Version => "1.7", :Default => false
-    field   :Extensions,          :Type => Dictionary, :Version => "1.7", :ExtensionLevel => 3
-
-    def initialize(hash = {})
-      set_indirect(true)
-
-      super(hash)
-    end
-    
-  end
-  
-  #
   # Class representing additional actions which can be associated with a Catalog.
   #
   class CatalogAdditionalActions < Dictionary
@@ -480,6 +435,51 @@ module Origami
     field   :BaseVersion,             :Type => Name, :Required => true
     field   :ExtensionLevel,          :Type => Integer, :Required => true
 
+  end
+  
+  #
+  # Class representing the Catalog Dictionary of a PDF file.
+  #
+  class Catalog < Dictionary
+    
+    include StandardObject
+
+    field   :Type,                :Type => Name, :Default => :Catalog, :Required => true
+    field   :Version,             :Type => Name, :Version => "1.4"
+    field   :Pages,               :Type => Dictionary, :Required => true
+    field   :PageLabels,          :Type => Dictionary, :Version => "1.3"
+    field   :Names,               :Type => Dictionary, :Version => "1.2"
+    field   :Dests,               :Type => Dictionary, :Version => "1.1"
+    field   :ViewerPreferences,   :Type => ViewerPreferences, :Version => "1.2"  
+    field   :PageLayout,          :Type => Name, :Default => PageLayout::SINGLE
+    field   :PageMode,            :Type => Name, :Default => PageMode::NONE
+    field   :Outlines,            :Type => Dictionary
+    field   :Threads,             :Type => Array, :Version => "1.1"
+    field   :OpenAction,          :Type => [ Array, Dictionary ], :Version => "1.1"
+    field   :AA,                  :Type => Dictionary, :Version => "1.4"
+    field   :URI,                 :Type => Dictionary, :Version => "1.1"
+    field   :AcroForm,            :Type => Dictionary, :Version => "1.2"
+    field   :Metadata,            :Type => Stream, :Version => "1.4"
+    field   :StructTreeRoot,      :Type => Dictionary, :Version => "1.3"
+    field   :MarkInfo,            :Type => Dictionary, :Version => "1.4"
+    field   :Lang,                :Type => String, :Version => "1.4"
+    field   :SpiderInfo,          :Type => Dictionary, :Version => "1.3"
+    field   :OutputIntents,       :Type => Array, :Version => "1.4"
+    field   :PieceInfo,           :Type => Dictionary, :Version => "1.4"
+    field   :OCProperties,        :Type => Dictionary, :Version => "1.5"
+    field   :Perms,               :Type => Dictionary, :Version => "1.5"
+    field   :Legal,               :Type => Dictionary, :Version => "1.5"
+    field   :Requirements,        :Type => Array, :Version => "1.7"
+    field   :Collection,          :Type => Dictionary, :Version => "1.7"
+    field   :NeedsRendering,      :Type => Boolean, :Version => "1.7", :Default => false
+    field   :Extensions,          :Type => Dictionary, :Version => "1.7", :ExtensionLevel => 3
+
+    def initialize(hash = {})
+      set_indirect(true)
+
+      super(hash)
+    end
+    
   end
   
 end

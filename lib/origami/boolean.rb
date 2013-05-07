@@ -59,7 +59,7 @@ module Origami
       super(@value.to_s)
     end
     
-    def self.parse(stream) #:nodoc:
+    def self.parse(stream, parser = nil) #:nodoc:
 
       offset = stream.pos
     

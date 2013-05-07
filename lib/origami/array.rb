@@ -85,7 +85,7 @@ module Origami
       super
     end
     
-    def self.parse(stream) #:nodoc:
+    def self.parse(stream, parser = nil) #:nodoc:
       data = []
       offset = stream.pos
       
@@ -100,7 +100,7 @@ module Origami
           raise InvalidArrayObjectError, "Bad embedded object format"
         end
         
-        value = type.parse(stream)  
+        value = type.parse(stream, parser)
         data << value
       end
     
