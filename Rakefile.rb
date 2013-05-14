@@ -7,7 +7,7 @@ require 'rubygems/package_task'
 
 spec = Gem::Specification.new do |s|
   s.name       = "origami"
-  s.version    = "1.2.5"
+  s.version    = "1.2.6"
   s.author     = "Guillaume Delugre"
   s.email      = "guillaume at security-labs dot org"
   s.homepage   = "http://code.google.com/p/origami-pdf"
@@ -27,9 +27,10 @@ DESC
   s.has_rdoc          = true
   s.test_file         = "test/ts_pdf.rb"
   s.requirements      = "ruby-gtk2 if you plan to run the PDF Walker interface"
+  s.license           = "LGPL-3"
 
   s.bindir            = "bin"
-  s.executables       = [ "pdfdecompress", "pdfdecrypt", "pdfencrypt", "pdfmetadata", "pdf2graph", "pdf2ruby", "pdfextract", "pdfcop", "pdfcocoon", "pdfsh", "pdfwalker", "pdf2pdfa" ]
+  s.executables       = [ "pdfdecompress", "pdfdecrypt", "pdfencrypt", "pdfmetadata", "pdf2graph", "pdf2ruby", "pdfextract", "pdfcop", "pdfcocoon", "pdfsh", "pdfwalker", "pdf2pdfa", "pdfexplode" ]
 end
 
 task :default => [:package]
