@@ -114,67 +114,44 @@ module Origami
   
   module ResourcesHolder
 
-    def add_extgstate(name, extgstate)
-      target = self.is_a?(Resources) ? self : (self.Resources ||= Resources.new)
-
-      target.ExtGState ||= {}
-      target.ExtGState[name] = extgstate
-
-      self
+    def add_extgstate(extgstate, name = nil)
+      add_resource(Resources::EXTGSTATE, extgstate, name)
     end
 
-    def add_colorspace(name, colorspace)
-      target = self.is_a?(Resources) ? self : (self.Resources ||= Resources.new)
-
-      csdir = target[:ColorSpace] ||= {}
-      (csdir.is_a?(Reference) ? csdir.solve : csdir)[name] = colorspace
-    
-      self
+    def add_colorspace(colorspace, name = nil)
+      add_resource(Resources::COLORSPACE, colorspace, name)
     end
     
-    def add_pattern(name, pattern)
-      target = self.is_a?(Resources) ? self : (self.Resources ||= Resources.new)
-
-      target.Pattern ||= {}
-      target.Pattern[name] = pattern
-    
-      self
+    def add_pattern(pattern, name = nil)
+      add_resource(Resources::PATTERN, pattern, name)
     end
     
-    def add_shading(name, shading)
-      target = self.is_a?(Resources) ? self : (self.Resources ||= Resources.new)
-
-      target.Shading ||= {}
-      target.Shading[name] = shading
-    
-      self
+    def add_shading(shading, name = nil)
+      add_resource(Resources::SHADING, shading, name)
     end
 
-    def add_xobject(name, xobject)
-      target = self.is_a?(Resources) ? self : (self.Resources ||= Resources.new)
-
-      target.XObject ||= {}
-      target.XObject[name] = xobject
-    
-      self
+    def add_xobject(xobject, name = nil)
+      add_resource(Resources::XOBJECT, xobject, name)
     end
     
-    def add_font(name, font)
-      target = self.is_a?(Resources) ? self : (self.Resources ||= Resources.new)
-
-      target.Font ||= {}
-      target.Font[name] = font
-      
-      self
+    def add_font(font, name = nil)
+      add_resource(Resources::FONT, font, name)
     end
 
-    def add_properties(name, properties)
+    def add_properties(properties, name = nil)
+      add_resource(Resources::PROPERTIES, properties, name)
+    end
+
+    def add_resource(type, rsrc, name = nil)
+      return existing if not name and existing = ls_resources(type).key(rsrc)
+
+      name = new_id(type) unless name
       target = self.is_a?(Resources) ? self : (self.Resources ||= Resources.new)
 
-      target.Properties ||= {}
-      target.Properties[name] = properties
-    
-      self
+      rsrc_dict = target.send(type) || (target[type] = Dictionary.new)
+      rsrc_dict[name] = rsrc
+
+      name
     end
 
     def ls_resources(type)
@@ -204,6 +181,38 @@ module Origami
         merge self.fonts.
         merge self.properties
     end 
+
+    private
+
+    def new_id(type, prefix = nil) #:nodoc:
+      prefix ||= 
+      {
+        Resources::EXTGSTATE  => 'ExtG',
+        Resources::COLORSPACE => 'CS',
+        Resources::PATTERN    => 'P',
+        Resources::SHADING    => 'Sh',
+        Resources::XOBJECT    => 'Im',
+        Resources::FONT       => 'F',
+        Resources::PROPERTIES => 'Pr'
+      }[type]
+
+      rsrc = ls_resources(type)
+      n = '1'
+
+      while rsrc.include? (prefix + n).to_sym
+        n.next!
+      end
+
+      (prefix + n).to_sym
+    end
+
+    def new_extgstate_id; new_id(Resources::EXTGSTATE) end
+    def new_colorspace_id; new_id(Resources::COLORSPACE) end
+    def new_pattern_id; new_id(Resources::PATTERN) end
+    def new_shading_id; new_id(Resources::SHADING) end
+    def new_xobject_id; new_id(Resources::XOBJECT) end
+    def new_font_id; new_name(Resources::FONT) end
+    def new_properties_id; new_name(Resources::PROPERTIES) end       
   end
 
   #
@@ -231,16 +240,11 @@ module Origami
     field   :ProcSet,     :Type => Array
     field   PROPERTIES,   :Type => Dictionary, :Version => "1.2"
 
-    #def pre_build
-    #  unless self.Font
-    #    fnt = Font::Type1::Standard::Helvetica.new.pre_build
-    #    fnt.Name = :F1
-    #    
-    #    add_font(fnt.Name, fnt)
-    #  end
-    #  
-    #  super
-    #end
+    def pre_build
+      add_font(Font::Type1::Standard::Helvetica.new.pre_build) unless self.Font
+      
+      super
+    end
     
   end
 
@@ -461,17 +465,6 @@ module Origami
       super(hash)
       
       set_indirect(true)
-    end
-
-    def render(engine) #:nodoc:
-      contents = self.Contents
-      return unless contents.is_a? Stream
-      
-      unless contents.is_a? ContentStream
-        contents = ContentStream.new(contents.data)
-      end
-
-      contents.render(engine)
     end
 
     def pre_build

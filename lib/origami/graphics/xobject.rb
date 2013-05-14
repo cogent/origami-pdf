@@ -441,6 +441,127 @@ module Origami
     
   end #class ContentStream
 
+  class Page < Dictionary
+
+    def render(engine) #:nodoc:
+      contents = self.Contents
+      contents = [ contents ] unless contents.is_a? Array
+      
+      contents.each do |stream|
+        stream = stream.cast_to(ContentStream) unless stream.is_a? ContentStream
+
+        stream.render(engine)
+      end
+    end
+
+    # TODO :nodoc:
+    def draw_image
+      raise NotImplementedError
+    end
+
+    # See ContentStream#draw_line.
+    def draw_line(from, to, attr = {})
+      last_content_stream.draw_line(from, to, attr); self
+    end
+
+    # See ContentStream#draw_polygon.
+    def draw_polygon(coords = [], attr = {})
+      last_content_stream.draw_polygon(coords, attr); self
+    end
+    
+    # See ContentStream#draw_rectangle.
+    def draw_rectangle(x, y, width, height, attr = {})
+      last_content_stream.draw_rectangle(x, y, width, height, attr); self
+    end
+
+    # See ContentStream#write.
+    def write(text, attr = {})
+      last_content_stream.write(text, attr); self
+    end
+
+    # TODO :nodoc:
+    def paint_shading(shade)
+      raise NotImplementedError
+    end
+
+    # TODO :nodoc:
+    def set_text_font(font, size)
+      raise NotImplementedError
+    end
+
+    # See ContentStream#set_text_pos.
+    def set_text_pos(tx, ty)
+      last_content_stream.set_text_pos(tx, ty); self
+    end
+
+    # See ContentStream#set_text_leading.
+    def set_text_leading(leading)
+      last_content_stream.set_text_leading(leading); self
+    end
+
+    # See ContentStream#set_text_rendering.
+    def set_text_rendering(rendering)
+      last_content_stream.set_text_rendering(rendering); self
+    end
+
+    # See ContentStream#set_text_rise.
+    def set_text_rise(rise)
+      last_content_stream.set_text_rise(rise); self
+    end
+
+    # See ContentStream#set_text_scale.
+    def set_text_scale(scaling)
+      last_content_stream.set_text_scale(scaling); self
+    end
+
+    # See ContentStream#set_text_word_spacing.
+    def set_text_word_spacing(word_spacing)
+      last_content_stream.set_text_word_spacing(word_spacing); self
+    end
+
+    # See ContentStream#set_text_char_spacing.
+    def set_text_char_spacing(char_spacing)
+      last_content_stream.set_text_char_spacing(char_spacing); self
+    end
+
+    # See ContentStream#set_fill_color.
+    def set_fill_color(color)
+      last_content_stream.set_fill_color(color); self
+    end
+    
+    # See ContentStream#set_stroke_color.
+    def set_stroke_color(color)
+      last_content_stream.set_stroke_color(color); self
+    end
+
+    # See ContentStream#set_dash_pattern.
+    def set_dash_pattern(pattern)
+      last_content_stream.set_dash_pattern(pattern); self
+    end
+
+    # See ContentStream#set_line_width.
+    def set_line_width(width)
+      last_content_stream.set_line_width(width); self
+    end
+
+    # See ContentStream#set_line_cap.
+    def set_line_cap(cap)
+      last_content_stream.set_line_cap(cap); self
+    end
+    
+    # See ContentStream#set_line_join.
+    def set_line_join(join)
+      last_content_stream.set_line_join(join); self
+    end
+
+    private
+
+    def last_content_stream #:nodoc:
+      contents = (self.Contents ||= ContentStream.new)
+      contents.is_a?(Array) ? contents.last : contents
+    end
+  end # class Page
+
   module Graphics
 
     module XObject
