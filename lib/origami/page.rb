@@ -199,7 +199,7 @@ module Origami
       rsrc = ls_resources(type)
       n = '1'
 
-      while rsrc.include? (prefix + n).to_sym
+      while rsrc.include?((prefix + n).to_sym)
         n.next!
       end
 

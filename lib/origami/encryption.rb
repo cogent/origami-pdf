@@ -1067,7 +1067,7 @@ module Origami
     module Standard
     
       PADDING = "\x28\xBF\x4E\x5E\x4E\x75\x8A\x41\x64\x00\x4E\x56\xFF\xFA\x01\x08\x2E\x2E\x00\xB6\xD0\x68\x3E\x80\x2F\x0C\xA9\xFE\x64\x53\x69\x7A" #:nodoc:
-      PADDING.force_encoding('binary') if RUBY_VERSION > '1.8'
+      PADDING.force_encoding('binary') if RUBY_VERSION >= '1.9'
     
       #
       # Permission constants for encrypted documents.
@@ -1115,7 +1115,7 @@ module Origami
          
           if self.R < 5
             padded = pad_password(userpassword)
-            padded.force_encoding('binary') if RUBY_VERSION > '1.8'
+            padded.force_encoding('binary') if RUBY_VERSION >= '1.9'
 
             padded << self.O
             padded << [ self.P ].pack("i")
