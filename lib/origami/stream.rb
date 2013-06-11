@@ -476,6 +476,7 @@ module Origami
         objoff += objdata.size
         data << objdata
         obj.set_indirect(true)
+        obj.no = num
       end
       
       self.data = prolog + data
